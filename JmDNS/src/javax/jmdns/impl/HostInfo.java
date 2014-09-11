@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jmdns.NetworkTopologyDiscovery;
+import javax.jmdns.impl.constants.DNSConstants;
 import javax.jmdns.impl.constants.DNSRecordClass;
 import javax.jmdns.impl.constants.DNSRecordType;
 import javax.jmdns.impl.constants.DNSState;
@@ -64,7 +65,7 @@ public class HostInfo implements DNSStatefulObject {
      */
     public static HostInfo newHostInfo(InetAddress address, JmDNSImpl dns, String jmdnsName) {
         HostInfo localhost = null;
-        String aName = "";
+        String aName = (jmdnsName != null ? jmdnsName : "");
         InetAddress addr = address;
         try {
             if (addr == null) {
@@ -81,11 +82,11 @@ public class HostInfo implements DNSStatefulObject {
                         }
                     }
                 }
-                aName = addr.getHostName();
                 if (addr.isLoopbackAddress()) {
                     logger.warning("Could not find any address beside the loopback.");
                 }
-            } else {
+            }
+            if (aName.length() == 0) {
                 aName = addr.getHostName();
             }
             if (aName.contains("in-addr.arpa") || (aName.equals(addr.getHostAddress()))) {
@@ -98,6 +99,11 @@ public class HostInfo implements DNSStatefulObject {
             aName = ((jmdnsName != null) && (jmdnsName.length() > 0) ? jmdnsName : "computer");
         }
         // A host name with "." is illegal. so strip off everything and append .local.
+        // We also need to be carefull that the .local may already be there
+        int index = aName.indexOf(".local");
+        if (index > 0) {
+            aName = aName.substring(0, index);
+        }
         aName = aName.replace('.', '-');
         aName += ".local.";
         localhost = new HostInfo(addr, aName, dns);
@@ -111,11 +117,6 @@ public class HostInfo implements DNSStatefulObject {
             return null;
         }
     }
-
-    /**
-     * This is used to create a unique name for the host name.
-     */
-    private int hostNameCount;
 
     private HostInfo(final InetAddress address, final String name, final JmDNSImpl dns) {
         super();
@@ -157,11 +158,16 @@ public class HostInfo implements DNSStatefulObject {
         return _interfaze;
     }
 
+    public boolean conflictWithRecord(DNSRecord.Address record) {
+        DNSRecord.Address hostAddress = this.getDNSAddressRecord(record.getRecordType(), record.isUnique(), DNSConstants.DNS_TTL);
+        if (hostAddress != null) {
+            return hostAddress.sameType(record) && hostAddress.sameName(record) && (!hostAddress.sameValue(record));
+        }
+        return false;
+    }
+
     synchronized String incrementHostName() {
-        hostNameCount++;
-        int plocal = _name.indexOf(".local.");
-        int punder = _name.lastIndexOf('-');
-        _name = _name.substring(0, (punder == -1 ? plocal : punder)) + "-" + hostNameCount + ".local.";
+        _name = NameRegister.Factory.getRegistry().incrementName(this.getInetAddress(), _name, NameRegister.NameType.HOST);
         return _name;
     }
 
@@ -170,13 +176,24 @@ public class HostInfo implements DNSStatefulObject {
         if (this.getInetAddress() != null) {
             InetAddress from = packet.getAddress();
             if (from != null) {
-                if (from.isLinkLocalAddress() && (!this.getInetAddress().isLinkLocalAddress())) {
-                    // Ignore linklocal packets on regular interfaces, unless this is
-                    // also a linklocal interface. This is to avoid duplicates. This is
-                    // a terrible hack caused by the lack of an API to get the address
-                    // of the interface on which the packet was received.
+                if ((this.getInetAddress().isLinkLocalAddress() || this.getInetAddress().isMCLinkLocal()) && (!from.isLinkLocalAddress())) {
+                    // A host sending Multicast DNS queries to a link-local destination
+                    // address (including the 224.0.0.251 and FF02::FB link-local multicast
+                    // addresses) MUST only accept responses to that query that originate
+                    // from the local link, and silently discard any other response packets.
+                    // Without this check, it could be possible for remote rogue hosts to
+                    // send spoof answer packets (perhaps unicast to the victim host) which
+                    // the receiving machine could misinterpret as having originated on the
+                    // local link.
                     result = true;
                 }
+                // if (from.isLinkLocalAddress() && (!this.getInetAddress().isLinkLocalAddress())) {
+                // // Ignore linklocal packets on regular interfaces, unless this is
+                // // also a linklocal interface. This is to avoid duplicates. This is
+                // // a terrible hack caused by the lack of an API to get the address
+                // // of the interface on which the packet was received.
+                // result = true;
+                // }
                 if (from.isLoopbackAddress() && (!this.getInetAddress().isLoopbackAddress())) {
                     // Ignore loopback packets on a regular interface unless this is also a loopback interface.
                     result = true;
@@ -199,7 +216,7 @@ public class HostInfo implements DNSStatefulObject {
     }
 
     private DNSRecord.Address getDNS4AddressRecord(boolean unique, int ttl) {
-        if ((this.getInetAddress() instanceof Inet4Address) || ((this.getInetAddress() instanceof Inet6Address) && (((Inet6Address) this.getInetAddress()).isIPv4CompatibleAddress()))) {
+        if (this.getInetAddress() instanceof Inet4Address) {
             return new DNSRecord.IPv4Address(this.getName(), DNSRecordClass.CLASS_IN, unique, ttl, this.getInetAddress());
         }
         return null;
@@ -228,11 +245,6 @@ public class HostInfo implements DNSStatefulObject {
         if (this.getInetAddress() instanceof Inet4Address) {
             return new DNSRecord.Pointer(this.getInetAddress().getHostAddress() + ".in-addr.arpa.", DNSRecordClass.CLASS_IN, unique, ttl, this.getName());
         }
-        if ((this.getInetAddress() instanceof Inet6Address) && (((Inet6Address) this.getInetAddress()).isIPv4CompatibleAddress())) {
-            byte[] rawAddress = this.getInetAddress().getAddress();
-            String address = (rawAddress[12] & 0xff) + "." + (rawAddress[13] & 0xff) + "." + (rawAddress[14] & 0xff) + "." + (rawAddress[15] & 0xff);
-            return new DNSRecord.Pointer(address + ".in-addr.arpa.", DNSRecordClass.CLASS_IN, unique, ttl, this.getName());
-        }
         return null;
     }
 
@@ -258,14 +270,14 @@ public class HostInfo implements DNSStatefulObject {
         return buf.toString();
     }
 
-    public Collection<DNSRecord> answers(boolean unique, int ttl) {
+    public Collection<DNSRecord> answers(DNSRecordClass recordClass, boolean unique, int ttl) {
         List<DNSRecord> list = new ArrayList<DNSRecord>();
         DNSRecord answer = this.getDNS4AddressRecord(unique, ttl);
-        if (answer != null) {
+        if ((answer != null) && answer.matchRecordClass(recordClass)) {
             list.add(answer);
         }
         answer = this.getDNS6AddressRecord(unique, ttl);
-        if (answer != null) {
+        if ((answer != null) && answer.matchRecordClass(recordClass)) {
             list.add(answer);
         }
         return list;

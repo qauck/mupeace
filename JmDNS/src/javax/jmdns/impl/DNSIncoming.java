@@ -22,7 +22,7 @@ import javax.jmdns.impl.constants.DNSResultCode;
 
 /**
  * Parse an incoming DNS message into its components.
- * 
+ *
  * @author Arthur van Hoff, Werner Randelshofer, Pierre Frisch, Daniel Bobbert
  */
 public final class DNSIncoming extends DNSMessage {
@@ -55,8 +55,12 @@ public final class DNSIncoming extends DNSMessage {
             return this.read();
         }
 
+        public int readUnsignedByte() {
+            return (this.read() & 0xFF);
+        }
+
         public int readUnsignedShort() {
-            return (this.read() << 8) | this.read();
+            return (this.readUnsignedByte() << 8) | this.readUnsignedByte();
         }
 
         public int readInt() {
@@ -72,7 +76,7 @@ public final class DNSIncoming extends DNSMessage {
         public String readUTF(int len) {
             StringBuilder buffer = new StringBuilder(len);
             for (int index = 0; index < len; index++) {
-                int ch = this.read();
+                int ch = this.readUnsignedByte();
                 switch (ch >> 4) {
                     case 0:
                     case 1:
@@ -87,18 +91,18 @@ public final class DNSIncoming extends DNSMessage {
                     case 12:
                     case 13:
                         // 110x xxxx 10xx xxxx
-                        ch = ((ch & 0x1F) << 6) | (this.read() & 0x3F);
+                        ch = ((ch & 0x1F) << 6) | (this.readUnsignedByte() & 0x3F);
                         index++;
                         break;
                     case 14:
                         // 1110 xxxx 10xx xxxx 10xx xxxx
-                        ch = ((ch & 0x0f) << 12) | ((this.read() & 0x3F) << 6) | (this.read() & 0x3F);
+                        ch = ((ch & 0x0f) << 12) | ((this.readUnsignedByte() & 0x3F) << 6) | (this.readUnsignedByte() & 0x3F);
                         index++;
                         index++;
                         break;
                     default:
                         // 10xx xxxx, 1111 xxxx
-                        ch = ((ch & 0x3F) << 4) | (this.read() & 0x0f);
+                        ch = ((ch & 0x3F) << 4) | (this.readUnsignedByte() & 0x0f);
                         index++;
                         break;
                 }
@@ -116,7 +120,7 @@ public final class DNSIncoming extends DNSMessage {
             StringBuilder buffer = new StringBuilder();
             boolean finished = false;
             while (!finished) {
-                int len = this.read();
+                int len = this.readUnsignedByte();
                 if (len == 0) {
                     finished = true;
                     break;
@@ -132,7 +136,7 @@ public final class DNSIncoming extends DNSMessage {
                         names.put(Integer.valueOf(offset), new StringBuilder(label));
                         break;
                     case Compressed:
-                        int index = (DNSLabel.labelValue(len) << 8) | this.read();
+                        int index = (DNSLabel.labelValue(len) << 8) | this.readUnsignedByte();
                         String compressedLabel = _names.get(Integer.valueOf(index));
                         if (compressedLabel == null) {
                             logger1.severe("bad domain name: possible circular name detected. Bad offset: 0x" + Integer.toHexString(index) + " at 0x" + Integer.toHexString(pos - 2));
@@ -160,7 +164,7 @@ public final class DNSIncoming extends DNSMessage {
         }
 
         public String readNonNameString() {
-            int len = this.read();
+            int len = this.readUnsignedByte();
             return this.readUTF(len);
         }
 
@@ -176,7 +180,7 @@ public final class DNSIncoming extends DNSMessage {
 
     /**
      * Parse a message from a datagram packet.
-     * 
+     *
      * @param packet
      * @exception IOException
      */
@@ -191,10 +195,24 @@ public final class DNSIncoming extends DNSMessage {
         try {
             this.setId(_messageInputStream.readUnsignedShort());
             this.setFlags(_messageInputStream.readUnsignedShort());
+            if (this.getOperationCode() > 0) {
+                throw new IOException("Received a message with a non standard operation code. Currently unsupported in the specification.");
+            }
             int numQuestions = _messageInputStream.readUnsignedShort();
             int numAnswers = _messageInputStream.readUnsignedShort();
             int numAuthorities = _messageInputStream.readUnsignedShort();
             int numAdditionals = _messageInputStream.readUnsignedShort();
+
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer("DNSIncoming() questions:" + numQuestions + " answers:" + numAnswers + " authorities:" + numAuthorities + " additionals:" + numAdditionals);
+            }
+
+            // We need some sanity checks
+            // A question is at least 5 bytes and answer 11 so check what we have
+
+            if ((numQuestions * 5 + (numAnswers + numAuthorities + numAdditionals) * 11) > packet.getLength()) {
+                throw new IOException("questions:" + numQuestions + " answers:" + numAnswers + " authorities:" + numAuthorities + " additionals:" + numAdditionals);
+            }
 
             // parse questions
             if (numQuestions > 0) {
@@ -233,6 +251,10 @@ public final class DNSIncoming extends DNSMessage {
                     }
                 }
             }
+            // We should have drained the entire stream by now
+            if (_messageInputStream.available() > 0) {
+                throw new IOException("Received a message with the wrong length.");
+            }
         } catch (Exception e) {
             logger.log(Level.WARNING, "DNSIncoming() dump " + print(true) + "\n exception ", e);
             // This ugly but some JVM don't implement the cause on IOException
@@ -240,6 +262,28 @@ public final class DNSIncoming extends DNSMessage {
             ioe.initCause(e);
             throw ioe;
         }
+    }
+
+    private DNSIncoming(int flags, int id, boolean multicast, DatagramPacket packet, long receivedTime) {
+        super(flags, id, multicast);
+        this._packet = packet;
+        this._messageInputStream = new MessageInputStream(packet.getData(), packet.getLength());
+        this._receivedTime = receivedTime;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public DNSIncoming clone() {
+        DNSIncoming in = new DNSIncoming(this.getFlags(), this.getId(), this.isMulticast(), this._packet, this._receivedTime);
+        in._senderUDPPayload = this._senderUDPPayload;
+        in._questions.addAll(this._questions);
+        in._answers.addAll(this._answers);
+        in._authoritativeAnswers.addAll(this._authoritativeAnswers);
+        in._additionals.addAll(this._additionals);
+        return in;
     }
 
     private DNSQuestion readQuestion() {
@@ -284,7 +328,7 @@ public final class DNSIncoming extends DNSMessage {
                 if (service.length() > 0) {
                     rec = new DNSRecord.Pointer(domain, recordClass, unique, ttl, service);
                 } else {
-                    logger.log(Level.WARNING, "There was a problem reading the service name of the answer for domain:" + domain);
+                    logger.log(Level.WARNING, "PTR record of class: " + recordClass + ", there was a problem reading the service name of the answer for domain:" + domain);
                 }
                 break;
             case TYPE_TXT:
@@ -501,7 +545,7 @@ public final class DNSIncoming extends DNSMessage {
 
     /**
      * Appends answers to this Incoming.
-     * 
+     *
      * @exception IllegalArgumentException
      *                If not a query or if Truncated.
      */
@@ -522,7 +566,7 @@ public final class DNSIncoming extends DNSMessage {
 
     /**
      * This will return the default UDP payload except if an OPT record was found with a different size.
-     * 
+     *
      * @return the senderUDPPayload
      */
     public int getSenderUDPPayload() {
@@ -533,7 +577,7 @@ public final class DNSIncoming extends DNSMessage {
 
     /**
      * Returns a hex-string for printing
-     * 
+     *
      * @param bytes
      * @return Returns a hex-string which can be used within a SQL expression
      */

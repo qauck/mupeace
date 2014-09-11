@@ -48,16 +48,22 @@ class SocketListener extends Thread {
                     }
 
                     DNSIncoming msg = new DNSIncoming(packet);
-                    if (logger.isLoggable(Level.FINEST)) {
-                        logger.finest(this.getName() + ".run() JmDNS in:" + msg.print(true));
-                    }
-                    if (msg.isQuery()) {
-                        if (packet.getPort() != DNSConstants.MDNS_PORT) {
-                            this._jmDNSImpl.handleQuery(msg, packet.getAddress(), packet.getPort());
+                    if (msg.isValidResponseCode()) {
+                        if (logger.isLoggable(Level.FINEST)) {
+                            logger.finest(this.getName() + ".run() JmDNS in:" + msg.print(true));
                         }
-                        this._jmDNSImpl.handleQuery(msg, this._jmDNSImpl.getGroup(), DNSConstants.MDNS_PORT);
+                        if (msg.isQuery()) {
+                            if (packet.getPort() != DNSConstants.MDNS_PORT) {
+                                this._jmDNSImpl.handleQuery(msg, packet.getAddress(), packet.getPort());
+                            }
+                            this._jmDNSImpl.handleQuery(msg, this._jmDNSImpl.getGroup(), DNSConstants.MDNS_PORT);
+                        } else {
+                            this._jmDNSImpl.handleResponse(msg);
+                        }
                     } else {
-                        this._jmDNSImpl.handleResponse(msg);
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine(this.getName() + ".run() JmDNS in message with error code:" + msg.print(true));
+                        }
                     }
                 } catch (IOException e) {
                     logger.log(Level.WARNING, this.getName() + ".run() exception ", e);
@@ -69,17 +75,8 @@ class SocketListener extends Thread {
                 this._jmDNSImpl.recover();
             }
         }
-        // jP: 20010-01-18. Per issue #2933183. If this thread was stopped
-        // by closeMulticastSocket, we need to signal the other party via
-        // the jmDNS monitor. The other guy will then check to see if this
-        // thread has died.
-        // Note: This is placed here to avoid locking the IoLock object and
-        // 'this' instance together.
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest(this.getName() + ".run() exiting.");
-        }
-        synchronized (this._jmDNSImpl) {
-            this._jmDNSImpl.notifyAll();
         }
     }
 

@@ -27,6 +27,7 @@ public final class DNSConstants {
     public static final int    FLAGS_QR_QUERY                 = 0x0000;                                                       // Query
     public static final int    FLAGS_QR_RESPONSE              = 0x8000;                                                       // Response
 
+    public static final int    FLAGS_OPCODE                   = 0x7800;                                                       // Operation code
     public static final int    FLAGS_AA                       = 0x0400;                                                       // Authorative answer
     public static final int    FLAGS_TC                       = 0x0200;                                                       // Truncated
     public static final int    FLAGS_RD                       = 0x0100;                                                       // Recursion desired
@@ -35,6 +36,7 @@ public final class DNSConstants {
     public static final int    FLAGS_Z                        = 0x0040;                                                       // Zero
     public static final int    FLAGS_AD                       = 0x0020;                                                       // Authentic data
     public static final int    FLAGS_CD                       = 0x0010;                                                       // Checking disabled
+    public static final int    FLAGS_RCODE                    = 0x000F;                                                       // Response code
 
     // Time Intervals for various functions
 
@@ -42,10 +44,10 @@ public final class DNSConstants {
     public static final int    QUERY_WAIT_INTERVAL            = 225;                                                          // milliseconds between query loops.
     public static final int    PROBE_WAIT_INTERVAL            = 250;                                                          // milliseconds between probe loops.
     public static final int    RESPONSE_MIN_WAIT_INTERVAL     = 20;                                                           // minimal wait interval for response.
-    public static final int    RESPONSE_MAX_WAIT_INTERVAL     = 200;                                                          // maximal wait interval for response
-    public static final int    PROBE_CONFLICT_INTERVAL        = 500;                                                         // milliseconds to wait after conflict.
-    public static final int    PROBE_THROTTLE_COUNT           = 30;                                                           // After x tries go 1 time a sec. on probes.
-    public static final int    PROBE_THROTTLE_COUNT_INTERVAL  = 1000;                                                         // We only increment the throttle count, if the previous increment is inside this interval.
+    public static final int    RESPONSE_MAX_WAIT_INTERVAL     = 115;                                                          // maximal wait interval for response
+    public static final int    PROBE_CONFLICT_INTERVAL        = 1000;                                                         // milliseconds to wait after conflict.
+    public static final int    PROBE_THROTTLE_COUNT           = 10;                                                           // After x tries go 1 time a sec. on probes.
+    public static final int    PROBE_THROTTLE_COUNT_INTERVAL  = 5000;                                                         // We only increment the throttle count, if the previous increment is inside this interval.
     public static final int    ANNOUNCE_WAIT_INTERVAL         = 1000;                                                         // milliseconds between Announce loops.
     public static final int    RECORD_REAPER_INTERVAL         = 10000;                                                        // milliseconds between cache cleanups.
     public static final int    RECORD_EXPIRY_DELAY            = 1;                                                            // This is 1s delay used in ttl and therefore in seconds
