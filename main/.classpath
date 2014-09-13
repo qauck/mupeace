@@ -4,11 +4,12 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/JmDNS"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/LastFM-java"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ActionBarSherlock"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/JMPDComm"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="libs/org.xbill.dns_2.1.6.jar" sourcepath="/home/eisd/build/dnsjava/org"/>
+	<classpathentry kind="lib" path="libs/org.xbill.mdns_2.1.6.jar" sourcepath="/home/eisd/build/mdnsjava/mdnsjava/src/main"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -10,11 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
-
 import org.a0z.mpd.MPD;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -24,6 +19,11 @@ import com.actionbarsherlock.view.MenuItem;
 import org.musicpd.android.helpers.MPDAsyncHelper;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.SettingsHelper;
+import org.xbill.DNS.Message;
+import org.xbill.mDNS.Browse;
+import org.xbill.mDNS.DNSSDListener;
+import org.xbill.mDNS.MulticastDNSService;
+import org.xbill.mDNS.ServiceInstance;
 
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +35,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-public class ServerBonjourListActivity extends SherlockListActivity implements ServiceListener {
+public class ServerBonjourListActivity extends SherlockListActivity {
 	
 	private static final String SERVER_NAME = "server_name";
 	private static final String SERVER_IP = "server_ip";
@@ -43,7 +43,8 @@ public class ServerBonjourListActivity extends SherlockListActivity implements S
 	
 	//The multicast lock we'll have to release
 	private WifiManager.MulticastLock multicastLock = null;
-	private JmDNS jmdns = null;
+	MulticastDNSService mdns = null;
+	Object serviceDiscovery;
 	private List<Map<String,String>> servers = null;
 	private SimpleAdapter listAdapter = null;
 	SettingsHelper settings;
@@ -80,14 +81,53 @@ public class ServerBonjourListActivity extends SherlockListActivity implements S
     	//By default, the android wifi stack will ignore broadcasts, fix that
     	WifiManager wm = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     	multicastLock = wm.createMulticastLock("mupeace_bonjour");
-    	
+
     	try {
-			jmdns = JmDNS.create();
-			jmdns.addServiceListener("_mpd._tcp.local.", this);
-		} catch (IOException e) {
-			Log.w(e);
-		}
-		
+            mdns = new MulticastDNSService();
+            serviceDiscovery = mdns.startServiceDiscovery(new Browse("_mpd._tcp.local."), new DNSSDListener() {
+	    		public void serviceDiscovered(Object id, ServiceInstance info) {
+	    			Log.i("Service Discovered: " + info);
+					String address = chooseAddress(info.getAddresses());
+					Log.i("Address:   " + address);
+					if(address != null) {
+						final Map<String, String> server = new HashMap<String, String>();
+						server.put(SERVER_NAME, info.getName().getInstance());
+						server.put(SERVER_IP, address);
+						server.put(SERVER_PORT, Integer.toString(info.getPort()));
+						servers.add(server);
+					}
+					runOnUiThread(new Runnable() {
+						public void run() {
+							listAdapter.notifyDataSetChanged();
+						}
+					});
+	    		}
+	
+	    		public void serviceRemoved(Object id, ServiceInstance info) {
+	    			Log.i("Service Removed: " + info);
+	    			String name = info.getName().getInstance();
+	    			Iterator<Map<String, String>> i = servers.iterator();
+	    			while (i.hasNext())
+	    				if (i.next().get(SERVER_NAME).equals(name))
+	    					i.remove();
+					runOnUiThread(new Runnable() {
+						public void run() {
+							listAdapter.notifyDataSetChanged();
+						}
+					});
+	    		}
+	
+	    		public void handleException(Object id, Exception e) {
+	    			Log.e(e);
+	    		}
+	
+				public void receiveMessage(Object arg0, Message arg1) {
+				}    		
+	    	});
+    	} catch(IOException e) {
+    		Log.w(e);
+    	}
+
 		listAdapter = new SimpleAdapter(this, servers, android.R.layout.simple_list_item_1, new String[]{SERVER_NAME}, new int[]{android.R.id.text1});
 		getListView().setAdapter(listAdapter);
 
@@ -96,8 +136,6 @@ public class ServerBonjourListActivity extends SherlockListActivity implements S
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(true);
 		setTitle(R.string.servers);
-
-		processAddedServices();
     }
     
 	@Override
@@ -127,40 +165,26 @@ public class ServerBonjourListActivity extends SherlockListActivity implements S
 	
     @Override
     protected void onPause() {
-    	if(multicastLock == null || jmdns == null) {
-    		super.onPause();
-    		return;
-    	}
-		threadAddingServers.interrupt();
-    	multicastLock.release();
-    	
-    	super.onPause();
+		super.onPause();
+    	if (multicastLock != null)
+        	multicastLock.release();
     }
     
     @Override
     protected void onResume() {
     	super.onResume();
-    	if(multicastLock == null || jmdns == null) {
-    		return;
-    	}
-    	
-    	//Ask android to allow us to get WiFi broadcasts
-    	multicastLock.acquire();
-		processAddedServices();
+    	if (multicastLock != null)
+    		//Ask android to allow us to get WiFi broadcasts
+    		multicastLock.acquire();
     }
     
     @Override
     protected void onDestroy() {
-    	if(jmdns == null) {
-    		super.onDestroy();
-    		return;
-    	}
-    	if (threadAddingServers != null)
-    		threadAddingServers.interrupt();
     	try {
-			jmdns.close();
-		} catch (IOException e) {
-			//Closing fails ? LIKE I GIVE A SHIT
+    		mdns.stopServiceDiscovery(serviceDiscovery);
+    		mdns.close();
+			mdns = null;
+		} catch (Exception e) {
 		}
 		
 		super.onDestroy();
@@ -188,72 +212,4 @@ public class ServerBonjourListActivity extends SherlockListActivity implements S
     	}
     	return null;
     }
-    
-    java.util.concurrent.LinkedBlockingQueue<ServiceEvent> servicesAdded = new java.util.concurrent.LinkedBlockingQueue<ServiceEvent>();
-
-	@Override
-	public void serviceAdded(ServiceEvent event) {
-		servicesAdded.add(event);
-	}
-
-	Thread threadAddingServers;
-	public void processAddedServices() {
-		threadAddingServers = new Thread(new Runnable() {
-			public void run() {
-				while(true)
-					try {
-						ServiceEvent event = servicesAdded.take();
-						final List<Map<String,String>> serversAdded = new java.util.LinkedList<Map<String,String>>();
-						do {
-							ServiceInfo info = event.getDNS().getServiceInfo(event.getType(),
-									event.getName());
-							Log.i("Service added: " + event.getName() + (info == null ? null : " resolved"));
-							if (info != null)
-							{
-								String address = chooseAddress(info.getInetAddresses());
-								Log.i("Address:   " + address);
-								if(address != null) {
-									final Map<String, String> server = new HashMap<String, String>();
-									server.put(SERVER_NAME, info.getName());
-									server.put(SERVER_IP, address);
-									server.put(SERVER_PORT, Integer.toString(info.getPort()));
-									serversAdded.add(server);
-								}
-							}
-						} while ((event = servicesAdded.poll()) != null);
-						runOnUiThread(new Runnable() {
-						    public void run() {
-								synchronized(servers) {
-									for(Map<String,String> server : serversAdded)
-										servers.add(server);
-								}
-								listAdapter.notifyDataSetChanged();
-						    }
-						});
-					}
-					catch(InterruptedException e) {}
-					catch(Exception e) { try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e1) {
-					} }
-			}
-		});
-		threadAddingServers.start();
-	}
-
-	@Override
-	public void serviceRemoved(ServiceEvent event) {
-		String name = event.getName();
-		Log.i("Service removed: " + name);
-		Iterator<Map<String, String>> i = servers.iterator();
-		while (i.hasNext()) {
-			if (i.next().get(SERVER_NAME).equals(name)) {
-				i.remove();
-			}
-		}
-	}
-
-	@Override
-	public void serviceResolved(ServiceEvent event) {
-	}
 }
