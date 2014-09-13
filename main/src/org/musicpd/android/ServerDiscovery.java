@@ -50,12 +50,7 @@ public class ServerDiscovery {
 				}
 
 				public void serviceRemoved(Object id, ServiceInstance info) {
-					Log.i("Service Removed: " + info);
-					String name = info.getName().getInstance();
-					Iterator<ServerInfo> i = servers.iterator();
-					while (i.hasNext())
-						if (i.next().name.equals(name))
-							i.remove();
+					Log.i("Service Removed: " + info + " " + servers.remove(new ServerInfo(info)));
 				}
 
 				public void handleException(Object id, Exception e) {
