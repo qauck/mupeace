@@ -14,7 +14,11 @@ public class ServerInfo {
 	public final int port;
 
 	public ServerInfo(ServiceInstance info) {
-		this.name = info.getName().getInstance();
+		this.name = info.getName().getInstance()
+			// TODO: replace common chars hack with full unescape
+			.replace("\\32", " ")
+			.replaceAll("\\\\([^\\\\])", "$1")
+			.intern();
 		this.address = chooseAddress(info.getAddresses());
 		this.port = info.getPort();
 	}
