@@ -53,6 +53,7 @@ public class MPDApplication extends Application implements ConnectionListener {
 	public MPDAsyncHelper oMPDAsyncHelper = null;
 	private SettingsHelper settingsHelper = null;
 	private ApplicationState state = new ApplicationState();
+	public final ServerDiscovery serverDiscovery = new ServerDiscovery(this);
 
 	private Collection<Object> connectionLocks = new LinkedList<Object>();
 	private AlertDialog ad;
@@ -114,6 +115,14 @@ public class MPDApplication extends Application implements ConnectionListener {
 			settings.edit().putBoolean("albumTrackSort", true).commit();
 	}
 
+	public void onPause() {
+		serverDiscovery.onPause();
+	}
+
+	public void onResume() {
+		serverDiscovery.onResume();
+	}
+
 	public void setActivity(Object activity) {
 		if (activity instanceof Activity)
 			currentActivity = (Activity) activity;
@@ -168,6 +177,7 @@ public class MPDApplication extends Application implements ConnectionListener {
 	}
 	
 	public void terminateApplication() {
+		serverDiscovery.onDestroy();
 		this.currentActivity.finish();
 	}
 	

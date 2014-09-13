@@ -27,6 +27,20 @@ public class MPDActivities {
 				setTheme(R.style.AppTheme_Light);
 			}
 		}
+
+		@Override
+		protected void onPause() {
+			super.onPause();
+			final MPDApplication app = (MPDApplication) getApplicationContext();
+			app.onPause();
+		}
+
+		@Override
+		protected void onResume() {
+			super.onPause();
+			final MPDApplication app = (MPDApplication) getApplicationContext();
+			app.onResume();
+		}
 	}
 
 	public static class MPDActivity extends SherlockActivity {
@@ -40,6 +54,20 @@ public class MPDActivities {
 				setTheme(R.style.AppTheme_Light);
 			}
 		}
+
+		@Override
+		protected void onPause() {
+			super.onPause();
+			final MPDApplication app = (MPDApplication) getApplicationContext();
+			app.onPause();
+		}
+
+		@Override
+		protected void onResume() {
+			super.onPause();
+			final MPDApplication app = (MPDApplication) getApplicationContext();
+			app.onResume();
+		}
 	}
 
 	public static class MPDListActivity extends SherlockListActivity {
@@ -52,6 +80,20 @@ public class MPDActivities {
 			if (((MPDApplication) getApplication()).isLightThemeSelected()) {
 				setTheme(R.style.AppTheme_Light);
 			}
+		}
+
+		@Override
+		protected void onPause() {
+			super.onPause();
+			final MPDApplication app = (MPDApplication) getApplicationContext();
+			app.onPause();
+		}
+
+		@Override
+		protected void onResume() {
+			super.onPause();
+			final MPDApplication app = (MPDApplication) getApplicationContext();
+			app.onResume();
 		}
 	}
 
