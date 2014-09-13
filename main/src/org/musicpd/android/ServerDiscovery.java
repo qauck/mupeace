@@ -21,7 +21,7 @@ public class ServerDiscovery {
 	private WifiManager.MulticastLock multicastLock;
 	MulticastDNSService mdns;
 	Object serviceDiscovery;
-	public final List<ServerInfo> servers = new ArrayList<ServerInfo>() {
+	public final List<ServerInfo> servers = new java.util.concurrent.CopyOnWriteArrayList<ServerInfo>() {
 		public boolean add(ServerInfo info) {
 			int index = Collections.binarySearch(this, info, ServerInfo.byName);
 			if (index < 0) index = ~index;
@@ -42,14 +42,14 @@ public class ServerDiscovery {
 		try {
 			mdns = new MulticastDNSService();
 			serviceDiscovery = mdns.startServiceDiscovery(new Browse("_mpd._tcp.local."), new DNSSDListener() {
-				public synchronized void serviceDiscovered(Object id, ServiceInstance info) {
+				public void serviceDiscovered(Object id, ServiceInstance info) {
 					Log.i("Service Discovered: " + info);
 					ServerInfo server = new ServerInfo(info);
 					if (server.address != null)
 						servers.add(server);
 				}
 
-				public synchronized void serviceRemoved(Object id, ServiceInstance info) {
+				public void serviceRemoved(Object id, ServiceInstance info) {
 					Log.i("Service Removed: " + info);
 					String name = info.getName().getInstance();
 					Iterator<ServerInfo> i = servers.iterator();

@@ -46,8 +46,20 @@ public class ServerBonjourListActivity extends MPDListActivity {
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(true);
 		setTitle(R.string.servers);
+
+		refresh();
     }
-    
+
+    void refresh() {
+    	Log.i("Refreshing Players view");
+    	listAdapter.notifyDataSetChanged();
+    	getListView().postDelayed(new Runnable() {
+    		public void run() {
+    			refresh();
+    		}
+    	}, 1000);
+    }
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
