@@ -60,6 +60,11 @@ public class ArtistsFragment extends BrowseFragment {
 	}
 
 	@Override
+	protected String[] info(Item item) {
+		return new String[] { "artist", item.getName() };
+	}
+
+	@Override
 	protected void add(Item item, boolean replace, boolean play) {
 		try {
 			app.oMPDAsyncHelper.oMPD.add((Artist) item, replace, play);

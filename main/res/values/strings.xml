@@ -228,5 +228,6 @@
     <string name="showRelated">Show Related</string>
     <string name="hideRelated">Hide Related</string>
     <string name="crashReport">Please restart the application</string>
+    <string name="information">Information</string>
 
 </resources>

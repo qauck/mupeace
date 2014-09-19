@@ -104,6 +104,14 @@ public class AlbumsFragment extends BrowseFragment {
 	}
 
 	@Override
+	protected String[] info(Item item) {
+		return artist == null
+			? new String[] { "album", item.getName() }
+			: new String[] { "artist", artist.getName(), "album", item.getName() }
+		;
+	}
+
+	@Override
 	protected void add(Item item, boolean replace, boolean play) {
 		try {
 			app.oMPDAsyncHelper.oMPD.add((Album) item, replace, play);

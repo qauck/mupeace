@@ -46,6 +46,8 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.internal.widget.IcsListPopupWindow;
+
+import org.musicpd.android.InformationActivity;
 import org.musicpd.android.MPDApplication;
 import org.musicpd.android.R;
 import org.musicpd.android.StreamingService;
@@ -68,6 +70,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 	private static final int POPUP_FOLDER = 2;
 	private static final int POPUP_STREAM = 3;
 	private static final int POPUP_SHARE = 4;
+	private static final int POPUP_INFO = 5;
 
 	private TextView artistNameText;
 	private TextView songNameText;
@@ -276,11 +279,12 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 						items[0] = new PopupMenuItem(POPUP_STREAM, R.string.goToStream);
 						items[1] = new PopupMenuItem(POPUP_SHARE, R.string.share);
 					} else {
-						items = new PopupMenuItem[4];
+						items = new PopupMenuItem[5];
 						items[0] = new PopupMenuItem(POPUP_ARTIST, R.string.goToAlbum);
 						items[1] = new PopupMenuItem(POPUP_ALBUM, R.string.goToArtist);
 						items[2] = new PopupMenuItem(POPUP_FOLDER, R.string.goToFolder);
 						items[3] = new PopupMenuItem(POPUP_SHARE, R.string.share);
+						items[4] = new PopupMenuItem(POPUP_INFO, R.string.information);
 					}
 					popupMenu.setAdapter(new PopupMenuAdapter(getActivity(),
 							Build.VERSION.SDK_INT >= 14 ? android.R.layout.simple_spinner_dropdown_item
@@ -842,7 +846,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 				break;
 			case POPUP_STREAM:
 				intent = new Intent(getActivity(), SimpleLibraryActivity.class);
-				intent.putExtra("steams", true);
+				intent.putExtra("streams", true);
 				startActivityForResult(intent, -1);
 				break;
 			case POPUP_SHARE:
@@ -856,6 +860,10 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 				sendIntent.putExtra(Intent.EXTRA_TEXT, shareString);
 				sendIntent.setType("text/plain");
 				startActivity(sendIntent);
+				break;
+			case POPUP_INFO:
+				InformationActivity.start(getActivity(), new String[] { "file", currentSong.getFullpath() });
+				break;
 		}
 	}
 }

@@ -36,6 +36,7 @@ public class MPDCommand {
 	public static final String MPD_CMD_OUTPUTS = "outputs";
 	public static final String MPD_CMD_OUTPUTENABLE = "enableoutput";
 	public static final String MPD_CMD_OUTPUTDISABLE = "disableoutput";
+	public static final String MPD_CMD_PLAYLIST_INFO_BY_ID = "playlistid";
 	public static final String MPD_CMD_PLAYLIST_INFO = "listplaylistinfo";
 	public static final String MPD_CMD_PLAYLIST_ADD = "playlistadd";
 	public static final String MPD_CMD_PLAYLIST_MOVE = "playlistmove";

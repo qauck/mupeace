@@ -42,6 +42,8 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
+import org.musicpd.android.InformationActivity;
 import org.musicpd.android.MPDApplication;
 import org.musicpd.android.MainMenuActivity;
 import org.musicpd.android.R;
@@ -557,6 +559,13 @@ public class PlaylistFragment extends SherlockListFragment implements StatusChan
 				try {
 					app.oMPDAsyncHelper.oMPD.getPlaylist().removeById(popupSongID);
 					Tools.notifyUser(getResources().getString(R.string.deletedSongFromPlaylist), getActivity());
+				} catch (Exception e) {
+					Log.w(e);
+				}
+				return true;
+			case R.id.PLCX_information:
+				try {
+					InformationActivity.start(getActivity(), popupSongID);
 				} catch (Exception e) {
 					Log.w(e);
 				}

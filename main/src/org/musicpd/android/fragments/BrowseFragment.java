@@ -27,6 +27,8 @@ import android.widget.AbsListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+
+import org.musicpd.android.InformationActivity;
 import org.musicpd.android.MPDApplication;
 import org.musicpd.android.R;
 import org.musicpd.android.adapters.ArrayIndexerAdapter;
@@ -46,6 +48,7 @@ public abstract class BrowseFragment extends SherlockFragment implements OnMenuI
 	public static final int ADDNPLAY = 2;
 	public static final int ADD_TO_PLAYLIST = 3;
 	public static final int SHOW_RELATED = 5;
+	public static final int INFO = 6;
 
 	protected List<? extends Item> items = null;
 	
@@ -213,6 +216,9 @@ public abstract class BrowseFragment extends SherlockFragment implements OnMenuI
 				Log.w(e);
 			}
 		}
+
+		android.view.MenuItem information = menu.add(INFO, INFO, 0, R.string.information);
+		information.setOnMenuItemClickListener(this);
 	}
 
 	protected abstract void add(Item item, boolean replace, boolean play);
@@ -278,6 +284,10 @@ public abstract class BrowseFragment extends SherlockFragment implements OnMenuI
 				}
 				break;
 			}
+			case INFO: {
+				InformationActivity.start(getActivity(), info(lookup((int) info.id)));
+				break;
+			}
 			default:
 				final String name = item.getTitle().toString();
 				final int id = (int) item.getOrder();
@@ -338,6 +348,11 @@ public abstract class BrowseFragment extends SherlockFragment implements OnMenuI
 		} catch (Exception e) {
 			// What if the list is empty or some other bug ? I don't want any crashes because of that
 		}
+	}
+
+	protected String[] info(Item item) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

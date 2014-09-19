@@ -1,5 +1,6 @@
 package org.musicpd.android.fragments;
 
+import org.a0z.mpd.Album;
 import org.a0z.mpd.Genre;
 import org.a0z.mpd.Item;
 import org.a0z.mpd.MPDCommand;
@@ -42,6 +43,11 @@ public class GenresFragment extends BrowseFragment {
 			items = app.oMPDAsyncHelper.oMPD.getGenres();
 		} catch (MPDServerException e) {
 		}
+	}
+
+	@Override
+	protected String[] info(Item item) {
+		return new String[] { "genre", item.getName() };
 	}
 
 	@Override

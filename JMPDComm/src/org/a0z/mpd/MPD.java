@@ -316,6 +316,20 @@ public class MPD {
 		return Music.getMusicFromList(mpdConnection.sendCommand(searchCommand, args), sort);
     }
 
+	public List<String> findInfo(String[] args) throws MPDServerException {
+		if (!isConnected())
+			throw new MPDServerException("MPD Connection is not established");
+
+		return mpdConnection.sendCommand(MPDCommand.MPD_CMD_FIND, args);
+	}
+
+	public List<String> getPlaylistSongInfo(int SongId) throws MPDServerException {
+		if (!isConnected())
+			throw new MPDServerException("MPD Connection is not established");
+
+		return mpdConnection.sendCommand(MPDCommand.MPD_CMD_PLAYLIST_INFO_BY_ID, "" + SongId);
+	}
+
 	/**
 	 * Retrieves a database directory listing of the base of the database directory path.
 	 * 

@@ -32,6 +32,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.actionbarsherlock.internal.widget.IcsListPopupWindow;
+
+import org.musicpd.android.InformationActivity;
 import org.musicpd.android.MPDApplication;
 import org.musicpd.android.R;
 import org.musicpd.android.adapters.ArrayIndexerAdapter;
@@ -179,6 +181,9 @@ public class SongsFragment extends BrowseFragment {
 									case ADDNPLAY:
 										play = true;
 										break;
+									case INFO:
+										InformationActivity.start(getActivity(), new String[] { "artist", artist.getName(), "album", album.getName() });
+										return;
 								}
 								try {
 									app.oMPDAsyncHelper.oMPD.add(artist, album, replace, play);
@@ -231,6 +236,14 @@ public class SongsFragment extends BrowseFragment {
 		Album album = new Album(item.getAlbum());
 		((ILibraryFragmentActivity) getActivity()).pushLibraryFragment(new SongsFragment().init(artist, album),
 				"songs");
+	}
+
+	@Override
+	protected String[] info(Item item) {
+		return item instanceof Music
+			? new String[] { "file", ((Music)item).getFullpath() } 
+			: null
+		;
 	}
 
 	@Override
@@ -402,15 +415,18 @@ public class SongsFragment extends BrowseFragment {
 	 */
 
 	private PopupMenuAdapter getPopupMenuAdapter(Context context) {
-		final PopupMenuItem items[] = new PopupMenuItem[5];
-		
-		items[0] = new PopupMenuItem(SHOW_RELATED, showRelated? R.string.hideRelated : R.string.showRelated);
-		items[1] = new PopupMenuItem(ADD, R.string.addAlbum);
-		items[2] = new PopupMenuItem(ADDNREPLACE, R.string.addAndReplace);
-		items[3] = new PopupMenuItem(ADDNREPLACEPLAY, R.string.addAndReplacePlay);
-		items[4] = new PopupMenuItem(ADDNPLAY, R.string.addAndPlay);
-		return new PopupMenuAdapter(context, Build.VERSION.SDK_INT >= 14 ? android.R.layout.simple_spinner_dropdown_item
-				: R.layout.sherlock_spinner_dropdown_item, items);
+		return new PopupMenuAdapter(context,
+				Build.VERSION.SDK_INT >= 14
+					? android.R.layout.simple_spinner_dropdown_item
+					: R.layout.sherlock_spinner_dropdown_item,
+				new PopupMenuItem[] {
+					new PopupMenuItem(SHOW_RELATED, showRelated? R.string.hideRelated : R.string.showRelated),
+					new PopupMenuItem(INFO, R.string.information),
+					new PopupMenuItem(ADD, R.string.addAlbum),
+					new PopupMenuItem(ADDNREPLACE, R.string.addAndReplace),
+					new PopupMenuItem(ADDNREPLACEPLAY, R.string.addAndReplacePlay),
+					new PopupMenuItem(ADDNPLAY, R.string.addAndPlay),
+				});
 	}
 
 }

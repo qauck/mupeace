@@ -72,6 +72,7 @@
 			<meta-data android:name="android.app.default_searchable"
 				android:value=".SearchActivity" />
 		</activity>
+		<activity android:name=".InformationActivity" android:label="@string/information" />
 
 		<service android:enabled="true" android:name="StreamingService" />
 		<receiver android:name="org.musicpd.android.RemoteControlReceiver">

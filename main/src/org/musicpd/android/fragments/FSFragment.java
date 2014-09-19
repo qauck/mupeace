@@ -59,7 +59,12 @@ public class FSFragment extends BrowseFragment {
 		directory = path;
 		return this;
 	}
-	
+
+	@Override
+	protected String[] info(Item item) {
+		return new String[] { "base", currentDirectory.getDirectory(item.getName()).getFullpath() };
+	}
+
 	@Override
 	protected void add(Item item, boolean replace, boolean play) {
 		try {
