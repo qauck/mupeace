@@ -1,5 +1,6 @@
 package org.musicpd.android.tools;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 
 import android.content.Context;
@@ -119,5 +120,17 @@ public final class Tools {
 
 	public static boolean isStringEmptyOrNull(String str) {
 		return (str == null || "".equals(str));
+	}
+
+	public static <T> T instantiate(Class<? extends T> c) {
+		try {
+			return (T) c.getConstructor().newInstance();
+		} catch (InstantiationException e) {
+		} catch (IllegalAccessException e) {
+		} catch (IllegalArgumentException e) {
+		} catch (InvocationTargetException e) {
+		} catch (NoSuchMethodException e) {
+		}
+		return null;
 	}
 }

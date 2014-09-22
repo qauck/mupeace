@@ -1,5 +1,10 @@
 package org.musicpd.android;
 
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
 import org.a0z.mpd.MPD;
 import org.a0z.mpd.MPDStatus;
 import org.a0z.mpd.exception.MPDServerException;
@@ -16,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,14 +32,17 @@ import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import org.musicpd.android.MPDActivities.MPDFragmentActivity;
+import org.musicpd.android.fragments.BrowseFragment;
 import org.musicpd.android.fragments.NowPlayingFragment;
 import org.musicpd.android.fragments.PlaylistFragment;
 import org.musicpd.android.fragments.PlaylistFragmentCompat;
+import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.library.LibraryTabActivity;
+import org.musicpd.android.tools.LibraryTabsUtil;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.Tools;
 
-public class MainMenuActivity extends MPDFragmentActivity implements OnNavigationListener {
+public class MainMenuActivity extends MPDFragmentActivity implements OnNavigationListener, ILibraryFragmentActivity {
 
 	public static final int PLAYLIST = 1;
 
@@ -62,6 +71,9 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
     private int backPressExitCount;
     private Handler exitCounterReset;
 	private boolean isDualPaneMode;
+	ActionBar actionBar;
+	ArrayAdapter<CharSequence> actionBarAdapter;
+	List<String> tabs;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -80,28 +92,25 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			StrictMode.setThreadPolicy(policy);
 		}
 
-        // Create the adapter that will return a fragment for each of the three primary sections
-        // of the app.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		// Create the adapter that will return a fragment for each of the three primary sections
+		// of the app.
+		tabs = LibraryTabsUtil.getCurrentLibraryTabs(getApplicationContext());
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
-		if (!isDualPaneMode) {
-			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-			actionBar.setDisplayShowTitleEnabled(false);
-			actionBar.setDisplayShowHomeEnabled(true);
-		} else {
-			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-			actionBar.setDisplayShowTitleEnabled(true);
-			actionBar.setDisplayShowHomeEnabled(true);
-			setTitle(R.string.nowPlaying);
-		}
-        
-		ArrayAdapter<CharSequence> actionBarAdapter = new ArrayAdapter<CharSequence>(getSupportActionBar().getThemedContext(),
+		// Set up the action bar.
+		actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(false);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setDisplayShowHomeEnabled(true);
+		setTitle(R.string.nowPlaying);
+
+		actionBarAdapter = new ArrayAdapter<CharSequence>(getSupportActionBar().getThemedContext(),
 				R.layout.sherlock_spinner_item);
-        actionBarAdapter.add(getString(R.string.nowPlaying));
-        actionBarAdapter.add(getString(R.string.playQueue));
-        
+		actionBarAdapter.add(getString(LibraryTabsUtil.getTabTitleResId(tabs.get(0))));
+		actionBarAdapter.add(getString(R.string.nowPlaying));
+		actionBarAdapter.add(getString(R.string.playQueue));
+
         if(Build.VERSION.SDK_INT >= 14) {
         	//Bug on ICS with sherlock's layout
         	actionBarAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -109,10 +118,16 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         	actionBarAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         }
         actionBar.setListNavigationCallbacks(actionBarAdapter, this);
+        if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
+        	actionBar.setTitle(actionBarAdapter.getItem(1));
+        else
+        	actionBar.setSelectedNavigationItem(1);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(1, false);
 		if (android.os.Build.VERSION.SDK_INT >= 9)
 			mViewPager.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
@@ -122,10 +137,40 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+                if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
+                	actionBar.setTitle(actionBarAdapter.getItem(position));
+                else
+                	actionBar.setSelectedNavigationItem(position);
             }
         });
     }
+
+	static String getTitle(Fragment f) {
+		if (f instanceof BrowseFragment) {
+			return ((BrowseFragment) f).getTitle();
+		} else {
+			return f.toString();
+		}
+	}
+
+	@Override
+	public void pushLibraryFragment(Fragment fragment, String label) {
+		String title = getTitle(fragment);
+		Fragment old = mSectionsPagerAdapter.push(fragment);
+		Log.i("removing " + getTitle(old));
+		actionBarAdapter.remove(getTitle(old));
+		actionBarAdapter.insert(title, 0);
+		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
+			actionBar.setTitle(title);
+		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		ft.remove(old);
+		ft.addToBackStack(label);
+		ft.setBreadCrumbTitle(title);
+		ft.commit();
+		Log.i(old + " removed");
+		mSectionsPagerAdapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public void onStart() {
@@ -196,6 +241,19 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            push(tabs.get(0));
+        }
+
+        public Fragment push(String tab) {
+        	return push((Fragment)Tools.instantiate(LibraryTabsUtil.getClass(MainMenuActivity.this, tab)));
+        }
+
+        int next = 100;
+        Stack<Map.Entry<Integer, Fragment>> stack = new Stack<Map.Entry<Integer, Fragment>>();
+        public Fragment push(Fragment f) {
+        	Fragment g = stack.isEmpty()? null : stack.peek().getValue();
+        	stack.push(new AbstractMap.SimpleEntry<Integer, Fragment>(++next, f));
+        	return g;
         }
 
         @Override
@@ -203,9 +261,12 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
             Fragment fragment = null;
             switch (i) {
 				case 0:
-					fragment = new NowPlayingFragment();
+					fragment = stack.peek().getValue();
 					break;
 				case 1:
+					fragment = new NowPlayingFragment();
+					break;
+				case 2:
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 						fragment = new PlaylistFragment();
 					} else {
@@ -218,16 +279,30 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
         @Override
         public int getCount() {
-			return isDualPaneMode ? 1 : 2;
+			return isDualPaneMode ? 2 : 3;
+        }
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			switch (position) {
+				case 0: return getTitle(stack.peek().getValue());
+				case 1: return getString(R.string.nowPlaying);
+				case 2: return getString(R.string.playQueue);
+			}
+			return null;
+		}
+
+        @Override
+        public int getItemPosition(Object object)
+        {
+        	if (object instanceof BrowseFragment && object != stack.peek())
+        		return POSITION_NONE;
+            return POSITION_UNCHANGED;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0: return getString(R.string.nowPlaying);
-                case 1: return getString(R.string.playQueue);
-            }
-            return null;
+        public long getItemId(int position) {
+            return position > 0? position : stack.peek().getKey();
         }
     }
 

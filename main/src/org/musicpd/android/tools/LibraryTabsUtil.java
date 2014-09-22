@@ -4,11 +4,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.musicpd.android.R;
+import org.musicpd.android.fragments.AlbumsFragment;
+import org.musicpd.android.fragments.AlbumsGridFragment;
+import org.musicpd.android.fragments.ArtistsFragment;
+import org.musicpd.android.fragments.FSFragment;
+import org.musicpd.android.fragments.GenresFragment;
+import org.musicpd.android.fragments.PlaylistsFragment;
+import org.musicpd.android.fragments.StreamsFragment;
 
 public class LibraryTabsUtil {
 
@@ -18,16 +26,6 @@ public class LibraryTabsUtil {
 	public static final String TAB_STREAMS = "streams";
 	public static final String TAB_FILES = "files";
 	public static final String TAB_GENRES = "genres";
-
-	public static final HashMap<String, Integer> TABS = new HashMap<String, Integer>();
-	static {
-		TABS.put(TAB_ARTISTS, R.string.artists);
-		TABS.put(TAB_FILES, R.string.files);
-		TABS.put(TAB_PLAYLISTS, R.string.playlists);
-		TABS.put(TAB_STREAMS, R.string.streams);
-		TABS.put(TAB_GENRES, R.string.genres);
-		TABS.put(TAB_ALBUMS, R.string.albums);
-	}
 
 	private static final String LIBRARY_TABS_SETTINGS_KEY = "currentLibraryTabs";
 
@@ -85,6 +83,46 @@ public class LibraryTabsUtil {
 	}
 
 	public static int getTabTitleResId(String tab) {
-		return TABS.get(tab);
+		switch(tab.intern()) {
+			case LibraryTabsUtil.TAB_ARTISTS:
+				return R.string.artists;
+			case LibraryTabsUtil.TAB_ALBUMS:
+				return R.string.albums;
+			case LibraryTabsUtil.TAB_PLAYLISTS:
+				return R.string.playlists;
+			case LibraryTabsUtil.TAB_STREAMS:
+				return R.string.streams;
+			case LibraryTabsUtil.TAB_FILES:
+				return R.string.files;
+			case LibraryTabsUtil.TAB_GENRES:
+				return R.string.genres;
+			default:
+				return R.string.artists;
+		}
+	}
+
+	public static final String PREFERENCE_ALBUM_LIBRARY = "enableAlbumArtLibrary";
+
+	public static Class<? extends Object> getClass(Context context, String tab) {
+		switch(tab.intern()) {
+			case LibraryTabsUtil.TAB_ARTISTS:
+				return ArtistsFragment.class;
+			case LibraryTabsUtil.TAB_ALBUMS:
+				final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+				return settings.getBoolean(PREFERENCE_ALBUM_LIBRARY, false)
+					? AlbumsGridFragment.class
+					: AlbumsFragment.class
+				;
+			case LibraryTabsUtil.TAB_PLAYLISTS:
+				return PlaylistsFragment.class;
+			case LibraryTabsUtil.TAB_STREAMS:
+				return StreamsFragment.class;
+			case LibraryTabsUtil.TAB_FILES:
+				return FSFragment.class;
+			case LibraryTabsUtil.TAB_GENRES:
+				return GenresFragment.class;
+			default:
+				return ArtistsFragment.class;
+		}
 	}
 }

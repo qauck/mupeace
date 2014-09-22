@@ -172,7 +172,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 
 	@Override
 	public void pageChanged(int position) {
-		if(actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
+		if(actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD)
 			actionBar.setSelectedNavigationItem(position);
 	}
 	

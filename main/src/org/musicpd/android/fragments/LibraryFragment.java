@@ -16,6 +16,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import org.musicpd.android.R;
 import org.musicpd.android.library.ILibraryTabActivity;
 import org.musicpd.android.tools.LibraryTabsUtil;
+import org.musicpd.android.tools.Tools;
 
 public class LibraryFragment extends SherlockFragment {
 	/**
@@ -24,8 +25,6 @@ public class LibraryFragment extends SherlockFragment {
 	 * memory intensive, it may be best to switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter sectionsPagerAdapter = null;
-
-	public static final String PREFERENCE_ALBUM_LIBRARY = "enableAlbumArtLibrary";
 
 	/**
 	 * The {@link ViewPager} that will host the section contents.
@@ -76,28 +75,7 @@ public class LibraryFragment extends SherlockFragment {
 
 		@Override
 		public Fragment getItem(int i) {
-			Fragment fragment = null;
-			String tab = activity.getTabList().get(i);
-			if (tab.equals(LibraryTabsUtil.TAB_ARTISTS)) {
-				fragment = new ArtistsFragment().init(null);
-			} else if (tab.equals(LibraryTabsUtil.TAB_ALBUMS)) {
-				// display either normal album listing, or album artwork grid
-				final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(((Activity) activity).getApplication());
-				if (settings.getBoolean(PREFERENCE_ALBUM_LIBRARY, false)) {
-					fragment = new AlbumsGridFragment().init(null);
-				}else{
-					fragment = new AlbumsFragment().init(null);
-				}
-			} else if (tab.equals(LibraryTabsUtil.TAB_PLAYLISTS)) {
-				fragment = new PlaylistsFragment();
-			} else if (tab.equals(LibraryTabsUtil.TAB_STREAMS)) {
-				fragment = new StreamsFragment();
-			} else if (tab.equals(LibraryTabsUtil.TAB_FILES)) {
-				fragment = new FSFragment();
-			} else if (tab.equals(LibraryTabsUtil.TAB_GENRES)) {
-				fragment = new GenresFragment();
-			}
-			return fragment;
+			return (Fragment)Tools.instantiate(LibraryTabsUtil.getClass(getActivity(), activity.getTabList().get(i)));
 		}
 
 		@Override

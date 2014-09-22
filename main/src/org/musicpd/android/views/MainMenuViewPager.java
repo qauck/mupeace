@@ -20,7 +20,7 @@ public class MainMenuViewPager extends ViewPager {
 		// If a touch event is intercepted on page 1, don't do anything.
 		// This will enable scoll on blank areas, cover art, but not on buttons/seekbars
 		// If we're on page 1, all that's displayed is a list that plays nicely with ViewPager
-		if (getCurrentItem() == 0)
+		if (getCurrentItem() == 1)
 			return false;
 		return super.onInterceptTouchEvent(event);
 	}
