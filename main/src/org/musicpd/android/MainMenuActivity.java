@@ -402,8 +402,21 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         }
 
 		public Fragment replace(String tab) {
+			Class<? extends Object> clazz = LibraryTabsUtil.getClass(MainMenuActivity.this, tab);
+			for (int i = 0, N = stack.size(); i < N; i++) {
+				Fragment f = stack.get(i).getValue();
+				if (clazz.isInstance(f) && getTitle(f).equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
+					try {
+						return stack.peek().getValue();
+					} finally {
+						if (i + 1 < N) {
+							stack.subList(i + 1, N).clear();
+							notifyDataSetChanged();
+						}
+					}
+			}
 			try {
-				return push((Fragment)Tools.instantiate(LibraryTabsUtil.getClass(MainMenuActivity.this, tab)));
+				return push((Fragment) Tools.instantiate(clazz));
 			} finally {
 				stack.subList(0, stack.size() - 1).clear();
 			}
