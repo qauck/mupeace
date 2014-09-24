@@ -2,11 +2,14 @@ package org.musicpd.android;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
 import org.a0z.mpd.MPD;
+import org.a0z.mpd.MPDOutput;
 import org.a0z.mpd.MPDStatus;
 import org.a0z.mpd.exception.MPDServerException;
 
@@ -28,6 +31,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -40,6 +45,7 @@ import org.musicpd.android.fragments.BrowseFragment;
 import org.musicpd.android.fragments.NowPlayingFragment;
 import org.musicpd.android.fragments.PlaylistFragment;
 import org.musicpd.android.fragments.PlaylistFragmentCompat;
+import org.musicpd.android.helpers.MPDAsyncHelper.ConnectionListener;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.library.LibraryTabActivity;
 import org.musicpd.android.tools.LibraryTabsUtil;
@@ -78,6 +84,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	ActionBar actionBar;
 	ArrayAdapter<CharSequence> actionBarAdapter;
 	List<String> tabs;
+	ConnectionListener persistentConnectionListener;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -173,7 +180,67 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         });
         setListViewHeightBasedOnChildren(left_library);
 
-    }
+		final ListView left_outputs = (ListView) findViewById(R.id.left_outputs);
+		final List<MPDOutput> outputs = new ArrayList<MPDOutput>();
+		final ArrayAdapter<MPDOutput> outputs_adapter = new ArrayAdapter<MPDOutput>(this, android.R.layout.simple_list_item_multiple_choice, outputs);
+		left_outputs.setAdapter(outputs_adapter);
+		app.oMPDAsyncHelper.addConnectionListener(persistentConnectionListener = new ConnectionListener() {
+			@Override
+			public void connectionFailed(String message) {
+			}
+
+			@Override
+			public void connectionSucceeded(String message) {
+				try {
+					final Collection<MPDOutput> o = app.oMPDAsyncHelper.oMPD.getOutputs();
+					Iterator<MPDOutput> i = o.iterator();
+					while (i.hasNext())
+						if ("quiet".equalsIgnoreCase(i.next().getName()))
+							i.remove();
+					left_outputs.post(new Runnable() {
+						@Override
+						public void run() {
+							outputs.clear();
+							outputs.addAll(o);
+							outputs_adapter.notifyDataSetChanged();
+							setListViewHeightBasedOnChildren(left_outputs);
+						}
+					});
+				} catch (MPDServerException e) {
+					Log.w(e);
+				}
+			}
+		});
+		left_outputs.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+			@Override
+			public void onChildViewAdded(View parent, View child) {
+				int i = 0;
+				for (MPDOutput output : outputs)
+					left_outputs.setItemChecked(i++, output.isEnabled());
+			}
+
+			@Override
+			public void onChildViewRemoved(View parent, View child) {
+			}
+		});
+		left_outputs.setOnItemClickListener(new ListView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				try {
+					//if ("slave".equals(id[1]))
+						//oMPD.setStickers("global", "slaves", id[0], (System.currentTimeMillis()/1000) + (on? "=on" : "=off"));
+					if (left_outputs.isItemChecked(position))
+						app.oMPDAsyncHelper.oMPD.enableOutput(outputs.get(position).getId());
+					else
+						app.oMPDAsyncHelper.oMPD.disableOutput(outputs.get(position).getId());
+				} catch (MPDServerException e) {
+					Log.e(e);
+				}
+			}
+		});
+		setListViewHeightBasedOnChildren(left_outputs);
+
+	}
 
 	public void setListViewHeightBasedOnChildren(ListView listView) {
 		ArrayAdapter<?> listAdapter = (ArrayAdapter<?>) listView.getAdapter(); 
