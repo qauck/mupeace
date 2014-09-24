@@ -37,7 +37,7 @@ public class ArtistsFragment extends BrowseFragment {
 		if (genre != null) {
 			return genre.getName();
 		} else {
-			return getString(R.string.genres);
+			return getString(R.string.artists);
 		}
 	}
 
