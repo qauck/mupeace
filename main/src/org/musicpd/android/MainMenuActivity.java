@@ -17,6 +17,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,6 +86,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	ArrayAdapter<CharSequence> actionBarAdapter;
 	List<String> tabs;
 	ConnectionListener persistentConnectionListener;
+	ActionBarDrawerToggle drawerToggle;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -110,9 +112,9 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
 		// Set up the action bar.
 		actionBar = getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(true);
 		setTitle(R.string.nowPlaying);
 
@@ -156,7 +158,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         });
 
         final DrawerLayout drawer_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer_layout.setDrawerListener(new ActionBarDrawerToggle(
+        drawer_layout.setDrawerListener(drawerToggle = new ActionBarDrawerToggle(
             this,                  /* host Activity */
             drawer_layout,         /* DrawerLayout object */
             R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
@@ -498,7 +500,21 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	}
 	
 	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		drawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		drawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (drawerToggle.onOptionsItemSelected(getMenuItem(item)))
+			return true;
 
 		Intent i = null;
 		final MPDApplication app = (MPDApplication) this.getApplication();
