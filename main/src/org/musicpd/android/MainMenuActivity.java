@@ -240,6 +240,30 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		});
 		setListViewHeightBasedOnChildren(left_outputs);
 
+		final ListView left_servers = (ListView) findViewById(R.id.left_servers);
+		final ArrayAdapter<ServerInfo> servers_adapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, app.serverDiscovery.servers);
+		left_servers.setAdapter(servers_adapter);
+		app.serverDiscovery.onChanged = new Runnable() {
+			@Override
+			public void run() {
+				left_servers.post(new Runnable() {
+					@Override
+					public void run() {
+						servers_adapter.notifyDataSetChanged();
+						setListViewHeightBasedOnChildren(left_servers);
+					}
+				});
+			}
+		};
+		left_servers.setOnItemClickListener(new ListView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				app.serverDiscovery.choose(position);
+				drawer_layout.closeDrawers();
+			}
+		});
+		setListViewHeightBasedOnChildren(left_servers);
+
 	}
 
 	public void setListViewHeightBasedOnChildren(ListView listView) {

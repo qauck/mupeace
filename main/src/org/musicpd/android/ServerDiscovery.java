@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.SettingsHelper;
 import org.xbill.DNS.Message;
 import org.xbill.mDNS.Browse;
 import org.xbill.mDNS.DNSSDListener;
@@ -29,8 +30,11 @@ public class ServerDiscovery {
 			return true;
 		}
 	};
+	public Runnable onChanged;
+	final MPDApplication app;
 
-	public ServerDiscovery(Context context) {
+	public ServerDiscovery(Context/*MPDApplication*/ context) {
+		app = (MPDApplication) context;
 		try {
 			//By default, the android wifi stack will ignore broadcasts, fix that
 			WifiManager wm = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
@@ -47,10 +51,14 @@ public class ServerDiscovery {
 					ServerInfo server = new ServerInfo(info);
 					if (server.address != null)
 						servers.add(server);
+					if (onChanged != null)
+						onChanged.run();
 				}
 
 				public void serviceRemoved(Object id, ServiceInstance info) {
 					Log.i("Service Removed: " + info + " " + servers.remove(new ServerInfo(info)));
+					if (onChanged != null)
+						onChanged.run();
 				}
 
 				public void handleException(Object id, Exception e) {
@@ -84,5 +92,15 @@ public class ServerDiscovery {
 		} catch (Exception e) {
 			Log.w(e);
 		}
+	}
+
+	public void choose(int position) {
+		new SettingsHelper(app, app.oMPDAsyncHelper)
+			.setHostname(
+				servers
+				.get(position)
+				.address
+			);
+		app.reconnect();
 	}
 }

@@ -175,7 +175,18 @@ public class MPDApplication extends Application implements ConnectionListener {
 		}
 		connectMPD();
 	}
-	
+
+	public void reconnect() {
+		try {
+			expected_disconnects++;
+			oMPDAsyncHelper.disconnect();
+		} finally {
+			//dismissAlertDialog();
+			//cancelDisconnectSheduler();
+			//oMPDAsyncHelper.connect();
+		}
+	}
+
 	public void terminateApplication() {
 		serverDiscovery.onDestroy();
 		this.currentActivity.finish();
@@ -238,7 +249,14 @@ public class MPDApplication extends Application implements ConnectionListener {
 		oMPDAsyncHelper.connect();
 	}
 
+	int expected_disconnects = 0;
 	public void connectionFailed(String message) {
+		if (expected_disconnects > 0) {
+			expected_disconnects--;
+			connectMPD();
+			return;
+		}
+
 		// dismiss possible dialog
 		dismissAlertDialog();
 		

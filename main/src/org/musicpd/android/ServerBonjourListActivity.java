@@ -20,9 +20,8 @@ import android.widget.ListView;
 public class ServerBonjourListActivity extends MPDListActivity {
 
 	private BaseAdapter listAdapter = null;
-	SettingsHelper settings;
-	MPDAsyncHelper oMPDAsyncHelper;
-  
+	ServerDiscovery serverDiscovery;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -35,10 +34,9 @@ public class ServerBonjourListActivity extends MPDListActivity {
 			Log.w(t);
 		}
 
-		final MPDApplication app = (MPDApplication) getApplicationContext();
-		settings = new SettingsHelper(app, oMPDAsyncHelper = app.oMPDAsyncHelper);
+		serverDiscovery = ((MPDApplication) getApplicationContext()).serverDiscovery;
 
-		listAdapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, app.serverDiscovery.servers);
+		listAdapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, serverDiscovery.servers);
 		getListView().setAdapter(listAdapter);
 
 		final ActionBar actionBar = getSupportActionBar();
@@ -87,13 +85,7 @@ public class ServerBonjourListActivity extends MPDListActivity {
 
 	@Override
 	protected void onListItemClick (ListView l, View v, int position, long id) {
-		final MPDApplication app = (MPDApplication) getApplicationContext();
-		settings.setHostname (
-			app.serverDiscovery.servers
-			.get(position)
-			.address
-		);
-		oMPDAsyncHelper.disconnect();
+		serverDiscovery.choose(position);
 		finish();
 	}
 
