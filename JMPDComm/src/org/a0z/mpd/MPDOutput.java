@@ -34,4 +34,9 @@ public class MPDOutput {
 		return enabled;
 	}
 
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 }

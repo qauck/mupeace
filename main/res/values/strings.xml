@@ -230,4 +230,7 @@
     <string name="crashReport">Please restart the application</string>
     <string name="information">Information</string>
 
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
 </resources>

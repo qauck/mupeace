@@ -1,6 +1,7 @@
 package org.musicpd.android;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -18,14 +19,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
@@ -143,7 +147,51 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
                 	actionBar.setSelectedNavigationItem(position);
             }
         });
+
+        final DrawerLayout drawer_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer_layout.setDrawerListener(new ActionBarDrawerToggle(
+            this,                  /* host Activity */
+            drawer_layout,         /* DrawerLayout object */
+            R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+            R.string.drawer_open,  /* "open drawer" description */
+            R.string.drawer_close  /* "close drawer" description */
+        ));
+
+        final List<String> tabNames = new ArrayList<String>(tabs.size());
+        for (String tab : tabs)
+        	tabNames.add(getString(LibraryTabsUtil.getTabTitleResId(tab)));
+
+        final ListView left_library = (ListView) findViewById(R.id.left_library);
+        left_library.setAdapter(new ArrayAdapter<String>(this, R.layout.simple_list_item_1, tabNames));
+        left_library.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MainMenuActivity.this.replaceLibraryFragment(tabs.get(position), tabNames.get(position));
+                drawer_layout.closeDrawers();
+                mViewPager.setCurrentItem(0, true);
+            }
+        });
+        setListViewHeightBasedOnChildren(left_library);
+
     }
+
+	public void setListViewHeightBasedOnChildren(ListView listView) {
+		ArrayAdapter<?> listAdapter = (ArrayAdapter<?>) listView.getAdapter(); 
+		if (listAdapter == null)
+			return;
+
+		int totalHeight = 0, N = listAdapter.getCount();
+		for (int i = 0; i < N; i++) {
+			final View listItem = listAdapter.getView(i, null, listView);
+			listItem.measure(0, 0);
+			totalHeight += Math.max(96, listItem.getMeasuredHeight());
+		}
+
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight + (listView.getDividerHeight() * (N - 1));
+		listView.setLayoutParams(params);
+		listView.requestLayout();
+   }
 
 	static String getTitle(Fragment f) {
 		if (f instanceof BrowseFragment) {
@@ -153,10 +201,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		}
 	}
 
-	@Override
-	public void pushLibraryFragment(Fragment fragment, String label) {
-		String title = getTitle(fragment);
-		Fragment old = mSectionsPagerAdapter.push(fragment);
+	void replace(Fragment old, String title, String label) {
 		Log.i("removing " + getTitle(old));
 		actionBarAdapter.remove(getTitle(old));
 		actionBarAdapter.insert(title, 0);
@@ -170,6 +215,15 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		ft.commit();
 		Log.i(old + " removed");
 		mSectionsPagerAdapter.notifyDataSetChanged();
+	}
+
+	public void replaceLibraryFragment(String tab, String label) {
+		replace(mSectionsPagerAdapter.replace(tab), getString(LibraryTabsUtil.getTabTitleResId(tab)), label);
+	}
+
+	@Override
+	public void pushLibraryFragment(Fragment fragment, String label) {
+		replace(mSectionsPagerAdapter.push(fragment), getTitle(fragment), label);
 	}
 
 	@Override
@@ -241,12 +295,16 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            push(tabs.get(0));
+            replace(tabs.get(0));
         }
 
-        public Fragment push(String tab) {
-        	return push((Fragment)Tools.instantiate(LibraryTabsUtil.getClass(MainMenuActivity.this, tab)));
-        }
+		public Fragment replace(String tab) {
+			try {
+				return push((Fragment)Tools.instantiate(LibraryTabsUtil.getClass(MainMenuActivity.this, tab)));
+			} finally {
+				stack.subList(0, stack.size() - 1).clear();
+			}
+		}
 
         int next = 100;
         Stack<Map.Entry<Integer, Fragment>> stack = new Stack<Map.Entry<Integer, Fragment>>();
