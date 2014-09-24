@@ -356,6 +356,10 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				return;
 			}
 		}
+		if (mViewPager.getCurrentItem() != 1) {
+			mViewPager.setCurrentItem(1, true);
+			return;
+		}
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		final boolean exitConfirmationRequired = settings.getBoolean("enableExitConfirmation", false);
 		if (exitConfirmationRequired && backPressExitCount < 1) {
