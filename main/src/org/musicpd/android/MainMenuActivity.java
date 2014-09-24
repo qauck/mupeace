@@ -295,19 +295,10 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	}
 
 	void replace(Fragment old, String title, String label) {
-		Log.i("removing " + getTitle(old));
 		actionBarAdapter.remove(getTitle(old));
 		actionBarAdapter.insert(title, 0);
 		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
 			actionBar.setTitle(title);
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-		ft.remove(old);
-		ft.addToBackStack(label);
-		ft.setBreadCrumbTitle(title);
-		ft.commit();
-		Log.i(old + " removed");
-		mSectionsPagerAdapter.notifyDataSetChanged();
 	}
 
 	public void replaceLibraryFragment(String tab, String label) {
@@ -350,6 +341,21 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	 */
 	@Override
 	public void onBackPressed() {
+		if (mViewPager.getCurrentItem() == 0) {
+			Fragment old = mSectionsPagerAdapter.pop();
+			if (old != null) {
+				CharSequence title = mSectionsPagerAdapter.getPageTitle(0);
+				actionBarAdapter.remove(getTitle(old));
+				actionBarAdapter.insert(title, 0);
+				if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
+					actionBar.setTitle(title);
+				final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+				ft.remove(old);
+				ft.commit();
+				return;
+			}
+		}
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		final boolean exitConfirmationRequired = settings.getBoolean("enableExitConfirmation", false);
 		if (exitConfirmationRequired && backPressExitCount < 1) {
@@ -402,9 +408,21 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         int next = 100;
         Stack<Map.Entry<Integer, Fragment>> stack = new Stack<Map.Entry<Integer, Fragment>>();
         public Fragment push(Fragment f) {
-        	Fragment g = stack.isEmpty()? null : stack.peek().getValue();
-        	stack.push(new AbstractMap.SimpleEntry<Integer, Fragment>(++next, f));
-        	return g;
+            try {
+                Fragment g = stack.isEmpty()? null : stack.peek().getValue();
+                stack.push(new AbstractMap.SimpleEntry<Integer, Fragment>(++next, f));
+                return g;
+            } finally {
+                notifyDataSetChanged();
+            }
+        }
+
+        public Fragment pop() {
+            try {
+                return stack.size() > 1? stack.pop().getValue() : null;
+            } finally {
+                notifyDataSetChanged();
+            }
         }
 
         @Override
@@ -446,7 +464,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         @Override
         public int getItemPosition(Object object)
         {
-        	if (object instanceof BrowseFragment && object != stack.peek())
+        	if (object instanceof BrowseFragment && object != stack.peek().getValue())
         		return POSITION_NONE;
             return POSITION_UNCHANGED;
         }
