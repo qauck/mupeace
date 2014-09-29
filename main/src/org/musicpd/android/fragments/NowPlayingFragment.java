@@ -749,6 +749,8 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 		progressBarTrack.setProgress((int) status.getElapsedTime());
 		if (status.getState() != null) {
 
+			this.getActivity().supportInvalidateOptionsMenu();
+
 			if (status.getState().equals(MPDStatus.MPD_STATE_PLAYING)) {
 				startPosTimer(status.getElapsedTime());
 				ImageButton button = (ImageButton) getView().findViewById(R.id.playpause);

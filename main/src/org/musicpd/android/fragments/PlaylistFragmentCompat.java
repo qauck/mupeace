@@ -248,17 +248,6 @@ public class PlaylistFragmentCompat extends SherlockListFragment implements Stat
 		}
 	}
 
-	/*
-	 * Create Menu for Playlist View
-	 * 
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 */
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.mpd_playlistmenu, menu);
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Menu actions...

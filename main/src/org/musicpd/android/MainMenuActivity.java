@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -150,6 +151,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+            	supportInvalidateOptionsMenu();
                 if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
                 	actionBar.setTitle(actionBarAdapter.getItem(position));
                 else
@@ -402,10 +404,10 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         }
 
 		public Fragment replace(String tab) {
-			Class<? extends Object> clazz = LibraryTabsUtil.getClass(MainMenuActivity.this, tab);
+			Class<? extends Object> clazz = tab == null? null : LibraryTabsUtil.getClass(MainMenuActivity.this, tab);
 			for (int i = 0, N = stack.size(); i < N; i++) {
 				Fragment f = stack.get(i).getValue();
-				if (clazz.isInstance(f) && getTitle(f).equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
+				if (tab == null || clazz.isInstance(f) && getTitle(f).equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
 					try {
 						return stack.peek().getValue();
 					} finally {
@@ -503,7 +505,25 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		//Reminder : never disable buttons that are shown as actionbar actions here
 		super.onPrepareOptionsMenu(menu);
-		MPDApplication app = (MPDApplication) this.getApplication();
+
+		int page = mViewPager.getCurrentItem();
+		Log.i("onPrepareOptionsMenu " + page);
+		//menu.findItem(R.id.menu_search).setShowAsAction(page == 0? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
+		menu.findItem(R.id.menu_up_to_root).setVisible(page == 0);
+		menu.findItem(R.id.GMM_LibTab).setVisible(page == 1);
+		menu.findItem(R.id.menu_back_left).setVisible(page == 2);
+		menu.findItem(R.id.menu_back_right).setVisible(page == 0);
+		menu.findItem(R.id.menu_playlist).setVisible(page == 1);
+		menu.findItem(R.id.PLM_EditPL).setVisible(page == 2);
+
+		final MPDApplication app = (MPDApplication) getApplication();
+		MPDStatus status = app.getApplicationState().currentMpdStatus;
+		menu.findItem(R.id.menu_play).setIcon(getResources().getDrawable(
+			status != null && MPDStatus.MPD_STATE_PLAYING.equals(status.getState())
+			? R.drawable.ic_media_pause
+			: R.drawable.ic_media_play
+		));
+
 		MPD mpd = app.oMPDAsyncHelper.oMPD;
 		if (!mpd.isConnected()) {
 			if (menu.findItem(CONNECT) == null) {
@@ -560,8 +580,18 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			case R.id.menu_search:
 				this.onSearchRequested();
 				return true;
+			case R.id.menu_up_to_root:
+				mSectionsPagerAdapter.replace(null);
+				return true;
 			case R.id.GMM_LibTab:
-				openLibrary();
+				mViewPager.setCurrentItem(0, true);
+				return true;
+			case R.id.menu_back_left:
+			case R.id.menu_back_right:
+				mViewPager.setCurrentItem(1, true);
+				return true;
+			case R.id.menu_playlist:
+				mViewPager.setCurrentItem(2, true);
 				return true;
 			case R.id.GMM_Settings:
 				i = new Intent(this, SettingsActivity.class);

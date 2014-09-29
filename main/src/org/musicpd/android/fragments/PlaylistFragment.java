@@ -332,18 +332,6 @@ public class PlaylistFragment extends SherlockListFragment implements StatusChan
 		super.onPause();
 	}
 
-	/*
-	 * Create Menu for Playlist View
-	 * 
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 */
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.mpd_playlistmenu, menu);
-		menu.findItem(R.id.menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Menu actions...
