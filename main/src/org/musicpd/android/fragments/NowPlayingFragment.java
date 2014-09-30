@@ -90,6 +90,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 
 	private TextView trackTime = null;
 	private TextView trackTotalTime = null;
+	private TextView trackRemainingTime = null;
 
 	private CoverAsyncHelper oCoverAsyncHelper = null;
 	long lastSongTime = 0;
@@ -228,6 +229,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 
 		trackTime = (TextView) view.findViewById(R.id.trackTime);
 		trackTotalTime = (TextView) view.findViewById(R.id.trackTotalTime);
+		trackRemainingTime = (TextView) view.findViewById(R.id.trackRemainingTime);
 
 		Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
 		fadeIn.setDuration(ANIMATION_DURATION_MSEC);
@@ -520,12 +522,17 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-			    	 trackTime.setText(timeToString(ellapsed));
-			    	 trackTotalTime.setText(timeToString(lastSongTime));
+					showTrackTimes(ellapsed, lastSongTime);
 			    }
 			});
 			lastElapsedTime = ellapsed;
 		}
+	}
+
+	void showTrackTimes(long ellapsed, long lastSongTime) {
+		trackTime.setText(timeToString(ellapsed));
+		trackTotalTime.setText(timeToString(lastSongTime));
+		trackRemainingTime.setText("-" + timeToString(lastSongTime - ellapsed));
 	}
 
 	private void startPosTimer(long start) {
@@ -627,8 +634,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 				if (noSong || actSong.isStream()) {
 					lastArtist = artist;
 					lastAlbum = album;
-					trackTime.setText(timeToString(0));
-					trackTotalTime.setText(timeToString(0));
+					showTrackTimes(0, 0);
 					coverArtListener.onCoverNotFound();
 				} else if (!lastAlbum.equals(album) || !lastArtist.equals(artist)) {
 					// coverSwitcher.setVisibility(ImageSwitcher.INVISIBLE);
@@ -693,9 +699,9 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 		long minutes = seconds / 60;
 		seconds -= minutes * 60;
 		if (hours == 0) {
-			return String.format("%02d:%02d", minutes, seconds);
+			return String.format("%d:%02d", minutes, seconds);
 		} else {
-			return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+			return String.format("%d:%02d:%02d", hours, minutes, seconds);
 		}
 	}
 
@@ -771,8 +777,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 		}
 		lastElapsedTime = status.getElapsedTime();
 		lastSongTime = status.getTotalTime();
-		trackTime.setText(timeToString(lastElapsedTime));
-   	 	trackTotalTime.setText(timeToString(lastSongTime));
+		showTrackTimes(lastElapsedTime, lastSongTime);
 		progressBarTrack.setProgress((int) status.getElapsedTime());
 		if (status.getState() != null) {
 
