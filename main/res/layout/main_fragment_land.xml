@@ -150,10 +150,21 @@
                 android:id="@+id/trackTotalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="3:45"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/nowPlayingPrimaryTextColor"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/trackRemainingTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:paddingRight="10dip"
-                android:text="3:45"
+                android:text="-3:25"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/nowPlayingPrimaryTextColor"
                 android:textSize="12sp" />
