@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/GMM_LibTab"
-        android:icon="@drawable/ic_action_library"
+        android:icon="@drawable/ic_action_library_trim"
         android:showAsAction="always"
         android:title="@string/libraryTabActivity" android:orderInCategory="1">
     </item>
@@ -16,7 +16,7 @@
 	</item>
     <item
         android:id="@+id/menu_back_left"
-        android:icon="@drawable/ic_action_back"
+        android:icon="@drawable/ic_action_back_trim"
         android:visible="false"
         android:showAsAction="always"
         android:title="@string/nowPlaying" android:orderInCategory="3">
@@ -41,7 +41,7 @@
 	</item>
     <item
         android:id="@+id/menu_playlist"
-        android:icon="@drawable/ic_mp_move"
+        android:icon="@drawable/ic_action_queue"
         android:showAsAction="always"
         android:title="@string/playlist" android:orderInCategory="7">
 	</item>
@@ -54,7 +54,7 @@
 	</item>
     <item
         android:id="@+id/PLM_EditPL"
-        android:icon="@drawable/ic_action_edit"
+        android:icon="@drawable/ic_action_edit_dim"
         android:visible="false"
         android:showAsAction="always"
         android:title="@string/editPlaylist" android:orderInCategory="9">
