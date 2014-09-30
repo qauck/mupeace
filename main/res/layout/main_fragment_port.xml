@@ -91,8 +91,8 @@
     <RelativeLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dip"
-        android:layout_marginTop="15dip"
+        android:layout_height="60dip"
+        android:layout_marginTop="20dip"
         >
 
         <SeekBar
@@ -201,8 +201,8 @@
         android:id="@+id/volume_layout"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="50dip"
-        android:layout_marginTop="15dip"
+        android:layout_height="60dip"
+        android:layout_marginTop="20dip"
         >
 
         <SeekBar
