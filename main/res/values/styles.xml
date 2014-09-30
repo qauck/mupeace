@@ -37,7 +37,6 @@
         <item name="repeatEnabled">@drawable/ic_media_repeat_on</item>
         <item name="shuffleDisabled">@drawable/ic_media_shuffle</item>
         <item name="shuffleEnabled">@drawable/ic_media_shuffle_on</item>
-        <item name="volumeEmpty">@drawable/ic_action_volume_empty</item>
         <item name="volumeIcon">@drawable/ic_action_volume</item>
     </style>
     
