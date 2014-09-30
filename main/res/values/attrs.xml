@@ -17,6 +17,7 @@
         <attr name="repeatEnabled" format="reference" />
         <attr name="shuffleDisabled" format="reference" />
         <attr name="shuffleEnabled" format="reference" />
+        <attr name="volumeEmpty" format="reference" />
         <attr name="volumeIcon" format="reference" />
     </declare-styleable>
 
