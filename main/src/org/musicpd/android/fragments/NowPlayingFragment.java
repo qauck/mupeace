@@ -122,6 +122,10 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 
 	private String noSongInfo = "";
 
+	View volume;
+	View progress;
+	long volume_show_time;
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -205,6 +209,8 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		settings.registerOnSharedPreferenceChangeListener(this);
 
+		volume = view.findViewById(R.id.volume_layout);
+		progress = view.findViewById(R.id.progress_layout);
 		streamingMode = app.getApplicationState().streamingMode;
 		connected = app.oMPDAsyncHelper.oMPD.isConnected();
 		artistNameText = (TextView) view.findViewById(R.id.artistName);
@@ -718,6 +724,27 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 	@Override
 	public void volumeChanged(MPDStatus mpdStatus, int oldVolume) {
 		progressBarVolume.setProgress(mpdStatus.getVolume());
+	}
+
+	final static long show_time = 1000;
+	public void showVolume() {
+		volume_show_time = new Date().getTime();
+		volume.post(new Runnable() {
+			@Override
+			public void run() {
+				progress.setVisibility(View.GONE);
+				volume.setVisibility(View.VISIBLE);
+				volume.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (volume_show_time + show_time <= new Date().getTime()) {
+							volume.setVisibility(View.GONE);
+							progress.setVisibility(View.VISIBLE);
+						}
+					}
+				}, show_time);
+			}
+		});
 	}
 
 	@Override

@@ -92,6 +92,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	ConnectionListener persistentConnectionListener;
 	ActionBarDrawerToggle drawerToggle;
 	DrawerLayout drawer_layout;
+	NowPlayingFragment nowPlaying;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -461,7 +462,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 					fragment = stack.peek().getValue();
 					break;
 				case 1:
-					fragment = new NowPlayingFragment();
+					fragment = nowPlaying = new NowPlayingFragment();
 					break;
 				case 2:
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -735,17 +736,20 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		case KeyEvent.KEYCODE_VOLUME_UP:
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			if (event.isTracking() && !event.isCanceled() && !app.getApplicationState().streamingMode) {
-				new Thread(new Runnable() {
+				if (nowPlaying != null)
+					nowPlaying.showVolume();
+				new AsyncTask<Void, Void, Void>() {
 					@Override
-					public void run() {
+					protected Void doInBackground(Void... params) {
 						try {
 							app.oMPDAsyncHelper.oMPD.adjustVolume(event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP ? NowPlayingFragment.VOLUME_STEP
 									: -NowPlayingFragment.VOLUME_STEP);
 						} catch (MPDServerException e) {
 							Log.w(e);
 						}
+						return null;
 					}
-				}).start();
+				}.execute();
 			}
 			return true;
 		}
