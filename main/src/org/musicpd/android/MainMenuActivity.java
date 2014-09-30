@@ -29,8 +29,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +91,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	List<String> tabs;
 	ConnectionListener persistentConnectionListener;
 	ActionBarDrawerToggle drawerToggle;
+	DrawerLayout drawer_layout;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -160,7 +163,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
             }
         });
 
-        final DrawerLayout drawer_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer_layout.setDrawerListener(drawerToggle = new ActionBarDrawerToggle(
             this,                  /* host Activity */
             drawer_layout,         /* DrawerLayout object */
@@ -298,7 +301,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	}
 
 	void replace(Fragment old, String title, String label) {
-		actionBarAdapter.remove(getTitle(old));
+		actionBarAdapter.remove(actionBarAdapter.getItem(0));
 		actionBarAdapter.insert(title, 0);
 		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
 			actionBar.setTitle(title);
@@ -344,6 +347,11 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	 */
 	@Override
 	public void onBackPressed() {
+		if (drawer_layout.isDrawerVisible(GravityCompat.START)
+				|| drawer_layout.isDrawerVisible(Gravity.LEFT)) {
+			drawer_layout.closeDrawers();
+			return;
+		}
 		if (mViewPager.getCurrentItem() == 0) {
 			Fragment old = mSectionsPagerAdapter.pop();
 			if (old != null) {
@@ -410,7 +418,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				Fragment f = stack.get(i).getValue();
 				if (tab == null || clazz.isInstance(f) && getTitle(f).equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
 					try {
-						return stack.peek().getValue();
+						return i + 1 == N? null : stack.peek().getValue();
 					} finally {
 						if (i + 1 < N) {
 							stack.subList(i + 1, N).clear();
@@ -582,7 +590,12 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				this.onSearchRequested();
 				return true;
 			case R.id.menu_up_to_root:
-				mSectionsPagerAdapter.replace(null);
+				if (mSectionsPagerAdapter.replace(null) == null)
+					if (drawer_layout.isDrawerVisible(GravityCompat.START)
+							|| drawer_layout.isDrawerVisible(Gravity.LEFT))
+						drawer_layout.closeDrawers();
+					else
+						drawer_layout.openDrawer(GravityCompat.START);
 				return true;
 			case R.id.GMM_LibTab:
 				mViewPager.setCurrentItem(0, true);
