@@ -18,6 +18,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -567,7 +568,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(final MenuItem item) {
 		if (drawerToggle.onOptionsItemSelected(getMenuItem(item)))
 			return true;
 
@@ -636,6 +637,35 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 					mpd.setSingle(!mpd.getStatus().isSingle());
 				} catch (MPDServerException e) {
 				}
+				return true;
+			case R.id.menu_previous:
+			case R.id.menu_play:
+			case R.id.menu_next:
+				new AsyncTask<Void, Void, Void>() {
+					@Override
+					protected Void doInBackground(Void... params) {
+						try {
+							switch (item.getItemId()) {
+								case R.id.menu_previous:
+									mpd.previous();
+									break;
+								case R.id.menu_play:
+									String state = mpd.getStatus().getState();
+									if (state == null || state.equals(MPDStatus.MPD_STATE_PLAYING) || state.equals(MPDStatus.MPD_STATE_PAUSED))
+										mpd.pause();
+									else
+										mpd.play();
+									break;
+								case R.id.menu_next:
+									mpd.next();
+									break;
+							}
+						} catch (MPDServerException e) {
+							Log.w(e);
+						}
+						return null;
+					}
+				}.execute();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
