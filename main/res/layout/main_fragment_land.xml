@@ -18,8 +18,8 @@
             android:id="@+id/coverLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dip"
-            android:layout_marginRight="10dip"
+            android:layout_marginLeft="12dip"
+            android:layout_marginRight="12dip"
             android:layout_marginTop="4dip"
             mupeace:fixedSide="height" >
 
@@ -40,70 +40,13 @@
                 android:visible="false" />
         </org.musicpd.android.views.FixedRatioRelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/songInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/seekLayout"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="8dip"
-            android:layout_toRightOf="@id/coverLayout"
-            android:background="@drawable/holo_transparent_button"
-            android:clickable="true"
-            android:gravity="center"
-            android:paddingBottom="2dip"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip" >
-
-            <TextView
-                android:id="@+id/songName"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:ellipsize="marquee"
-                android:gravity="center_horizontal"
-                android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?attr/nowPlayingPrimaryTextColor"
-                android:fontFamily="sans-serif-light"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/artistName"
-                style="@style/InfoSubText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/songName"
-                android:layout_marginTop="1dip"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center_horizontal" />
-
-            <TextView
-                android:id="@+id/albumName"
-                style="@style/InfoSubText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/artistName"
-                android:layout_marginTop="1dip"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center_horizontal" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/albumName"
-                android:layout_alignParentRight="true"
-                android:clickable="false"
-                android:src="?attr/menuButton" />
-        </RelativeLayout>
-        
 	    <RelativeLayout
 	        android:id="@+id/volume_layout"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="20dip"
-            android:layout_marginBottom="5dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dip"
+            android:layout_marginBottom="10dip"
             android:layout_toRightOf="@id/coverLayout" >
 	
 	        <SeekBar
@@ -125,21 +68,93 @@
 	            android:layout_marginLeft="15dip"
 	            android:src="?attr/volumeIcon" />
 	    </RelativeLayout>
-	        
+        
+        <RelativeLayout
+            android:id="@+id/songInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/volume_layout"
+            android:layout_marginBottom="10dip"
+            android:layout_toRightOf="@id/coverLayout"
+            android:background="@drawable/holo_transparent_button"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingBottom="2dip"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip" >
+
+            <TextView
+                android:id="@+id/songName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:ellipsize="marquee"
+                android:maxLines="3"
+                android:gravity="center_horizontal"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/nowPlayingPrimaryTextColor"
+                android:fontFamily="sans-serif-light"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/artistName"
+                style="@style/InfoSubText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/songName"
+                android:layout_marginTop="4dip"
+                android:fontFamily="sans-serif-light"
+                android:ellipsize="marquee"
+                android:maxLines="3"
+                android:gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/albumName"
+                style="@style/InfoSubText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/artistName"
+                android:layout_marginTop="4dip"
+                android:fontFamily="sans-serif-light"
+                android:ellipsize="marquee"
+                android:maxLines="3"
+                android:gravity="center_horizontal" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/albumName"
+                android:layout_alignParentRight="true"
+                android:clickable="false"
+                android:src="?attr/menuButton" />
+        </RelativeLayout>
+
         <RelativeLayout
             android:id="@+id/progress_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dip"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dip"
             android:layout_toRightOf="@id/coverLayout"
-            android:layout_above="@id/volume_layout" >
+            >
+
+            <SeekBar
+                android:id="@+id/progress_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="5dip"
+                android:max="100"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
+                android:progress="0" />
 
             <TextView
                 android:id="@+id/trackTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/progress_track"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
                 android:paddingLeft="10dip"
                 android:text="0:20"
                 android:textAppearance="?android:attr/textAppearanceSmall"
@@ -150,7 +165,7 @@
                 android:id="@+id/trackTotalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_below="@+id/progress_track"
                 android:layout_centerHorizontal="true"
                 android:text="3:45"
                 android:textAppearance="?android:attr/textAppearanceSmall"
@@ -161,29 +176,19 @@
                 android:id="@+id/trackRemainingTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/progress_track"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
                 android:paddingRight="10dip"
                 android:text="-3:25"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/nowPlayingPrimaryTextColor"
                 android:textSize="12sp" />
-
-            <SeekBar
-                android:id="@+id/progress_track"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/trackTime"
-                android:layout_marginTop="5dip"
-                android:max="100"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:progress="0" />
         </RelativeLayout>
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/buttons_layout"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/playerbutton_height"
         android:gravity="center_horizontal" >
