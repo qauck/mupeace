@@ -3,20 +3,20 @@ scala:
   - 2.11.2
 
 before_install:
-  - wget "$(wget http://developer.android.com/sdk/index.html -O-|grep -o 'http://[^"]*-linux[.][^"]*')" -O- | tar zx
+  - git fetch origin 'refs/tags/*:refs/tags/*'
+  - test -e android-sdk-linux || wget "$(wget http://developer.android.com/sdk/index.html -O-|grep -o 'http://[^"]*-linux[.][^"]*')" -O- | tar zx
   - export ANDROID_HOME="${PWD}/android-sdk-linux"
-  - export PATH="${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
-  - sudo apt-get update -qq
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch > /dev/null; fi
-  - export TOOLS=$(android list sdk --no-ui > listing; for i in 'Android SDK Platform-tools' 'Android SDK Build-tools' 'SDK Platform Android' 'Android Support Library' 'System Image'; do grep "$i" listing |head -1; done|cut -f1 -d-|tr -d \ |paste -sd,)
+  - export PATH="${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}"
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get update -qq; sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch > /dev/null; fi
+  - export TOOLS=$(android list sdk --no-ui > listing.new; android list sdk -a --no-ui > listing; for i in 'Android SDK Platform-tools' 'Android SDK Build-tools' 'SDK Platform Android' 'Android Support Library' 'System Image'; do grep "$(grep "$i" listing |head -1|cut -f2- -d-)" listing.new; done|cut -f1 -d-|tr -d \ |paste -sd,)
   - echo Updating $TOOLS
-  - echo yes |android -s update sdk --filter $TOOLS --no-ui --force
+  - test -n "$TOOLS" && echo yes |android -s update sdk --filter $TOOLS --no-ui --force
   - sed -i '/java.\(source\|target\)/s/1.5/1.7/' ${ANDROID_HOME}/tools/ant/build.xml
-  - wget http://www.scala-lang.org/files/archive/scala-$TRAVIS_SCALA_VERSION.tgz -O - |tar zx
-  - export SCALA_PATH="${PWD}/scala-$TRAVIS_SCALA_VERSION"
+  - (mkdir -p scala/; cd scala/; test -e scala-$TRAVIS_SCALA_VERSION || wget http://www.scala-lang.org/files/archive/scala-$TRAVIS_SCALA_VERSION.tgz -O - |tar zx)
+  - export SCALA_PATH="${PWD}/scala/scala-$TRAVIS_SCALA_VERSION"
   - echo git clone --depth 1 https://github.com/imsizon/ant-android-scala.git
   - export AAS="${PWD}/ant-android-scala"
-  - sed -i s/source.dir/scala.source.dir/g ${AAS}/build-scala.xml
+  - sed -i s/{source.dir}/{scala.source.dir}/g ${AAS}/build-scala.xml
   - openssl aes-128-cbc -d -salt -in .travis-debug.enc -out .travis-debug -k $key
   - export KEY_STORE="${PWD}/.travis-debug"
   - ant_mirror=http://mirrors.ukfast.co.uk/sites/ftp.apache.org//ant/binaries/; wget "$ant_mirror$(wget $ant_mirror -O - |sed -n 's/.*>\([^<]*\.bz2\)<.*/\1/p')" -O - |tar jx
@@ -25,10 +25,11 @@ before_install:
 
 script:
   - cd ./main
-  - envsubst < local.properties.tmpl |tee local.properties
+  - test -e ../local.properties.tmpl && export properties_template=../local.properties.tmpl
+  - envsubst < ${properties_template-local.properties.tmpl} |tee local.properties
   - cp ${SCALA_PATH}/lib/scala-library.jar libs/
   - ant clean
-  - ant debug
+  - if grep -q release local.properties; then ant release; else ant debug; fi
 
 env:
   global:
