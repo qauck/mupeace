@@ -22,6 +22,7 @@ import org.musicpd.android.R;
 import org.musicpd.android.fragments.BrowseFragment;
 import org.musicpd.android.fragments.LibraryFragment;
 import org.musicpd.android.fragments.NowPlayingFragment;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.LibraryTabsUtil;
 import org.musicpd.android.tools.Log;
 
@@ -181,7 +182,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 		final MPDApplication app = (MPDApplication) getApplicationContext();
 		switch (event.getKeyCode()) {
 		case KeyEvent.KEYCODE_VOLUME_UP:
-			new Thread(new Runnable() {
+			new Job() {
 				@Override
 				public void run() {
 					try {
@@ -190,10 +191,10 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 						Log.w(e);
 					}
 				}
-			}).start();
+			};
 			return true;
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
-			new Thread(new Runnable() {
+			new Job() {
 				@Override
 				public void run() {
 					try {
@@ -202,7 +203,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 						Log.w(e);
 					}
 				}
-			}).start();
+			};
 			return true;
 		}
 		return super.onKeyLongPress(keyCode, event);
@@ -225,7 +226,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 		case KeyEvent.KEYCODE_VOLUME_UP:
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			if (event.isTracking() && !event.isCanceled() && !app.getApplicationState().streamingMode) {
-				new Thread(new Runnable() {
+				new Job() {
 					@Override
 					public void run() {
 						try {
@@ -235,7 +236,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 			}
 			return true;
 		}

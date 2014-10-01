@@ -24,6 +24,7 @@ import org.musicpd.android.fragments.FSFragment;
 import org.musicpd.android.fragments.NowPlayingFragment;
 import org.musicpd.android.fragments.SongsFragment;
 import org.musicpd.android.fragments.StreamsFragment;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.YouTube;
 
@@ -100,7 +101,7 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 		final MPDApplication app = (MPDApplication) getApplicationContext();
 		switch (event.getKeyCode()) {
 		case KeyEvent.KEYCODE_VOLUME_UP:
-			new Thread(new Runnable() {
+			new Job() {
 				@Override
 				public void run() {
 					try {
@@ -109,10 +110,10 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 						Log.w(e);
 					}
 				}
-			}).start();
+			};
 			return true;
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
-			new Thread(new Runnable() {
+			new Job() {
 				@Override
 				public void run() {
 					try {
@@ -121,7 +122,7 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 						Log.w(e);
 					}
 				}
-			}).start();
+			};
 			return true;
 		}
 		return super.onKeyLongPress(keyCode, event);
@@ -144,7 +145,7 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 		case KeyEvent.KEYCODE_VOLUME_UP:
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			if (event.isTracking() && !event.isCanceled() && !app.getApplicationState().streamingMode) {
-				new Thread(new Runnable() {
+				new Job() {
 					@Override
 					public void run() {
 						try {
@@ -156,7 +157,7 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 			}
 			return true;
 		}

@@ -29,6 +29,7 @@ import org.musicpd.android.R;
 import org.musicpd.android.cover.CoverBitmapDrawable;
 import org.musicpd.android.helpers.CoverAsyncHelper;
 import org.musicpd.android.helpers.AlbumCoverDownloadListener;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
 
 public class NowPlayingSmallFragment extends SherlockFragment implements StatusChangeListener {
@@ -113,7 +114,7 @@ public class NowPlayingSmallFragment extends SherlockFragment implements StatusC
 		public void onClick(View v) {
 			switch (v.getId()) {
 				case R.id.prev:
-					new Thread(new Runnable() {
+					new Job() {
 						@Override
 						public void run() {
 							try {
@@ -122,10 +123,10 @@ public class NowPlayingSmallFragment extends SherlockFragment implements StatusC
 								Log.w(e.getMessage());
 							}
 						}
-					}).start();
+					};
 					break;
 				case R.id.playpause:
-					new Thread(new Runnable() {
+					new Job() {
 						@Override
 						public void run() {
 							try {
@@ -140,10 +141,10 @@ public class NowPlayingSmallFragment extends SherlockFragment implements StatusC
 								Log.w(e.getMessage());
 							}
 						}
-					}).start();
+					};
 					break;
 				case R.id.next:
-					new Thread(new Runnable() {
+					new Job() {
 						@Override
 						public void run() {
 							try {
@@ -152,7 +153,7 @@ public class NowPlayingSmallFragment extends SherlockFragment implements StatusC
 								Log.w(e.getMessage());
 							}
 						}
-					}).start();
+					};
 					break;
 			}
 		}

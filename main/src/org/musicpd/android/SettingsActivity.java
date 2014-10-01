@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.text.format.Formatter;
 
 import org.musicpd.android.cover.CachedCover;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
 
 public class SettingsActivity extends PreferenceActivity implements
@@ -129,8 +130,7 @@ public class SettingsActivity extends PreferenceActivity implements
 		}
 		app.oMPDAsyncHelper.addStatusChangeListener(this);
 
-		new Thread(new Runnable() {
-
+		new Job() {
 			@Override
 			public void run() {
 				try {
@@ -163,7 +163,7 @@ public class SettingsActivity extends PreferenceActivity implements
 					Log.w(e);
 				}
 			}
-		}).start();
+		};
 		// Server is Connected...
 
 		if (getIntent().getBooleanExtra(OPEN_OUTPUT, false)) {

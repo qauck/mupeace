@@ -58,6 +58,7 @@ import org.musicpd.android.helpers.CoverAsyncHelper;
 import org.musicpd.android.helpers.AlbumCoverDownloadListener;
 import org.musicpd.android.helpers.MPDConnectionHandler;
 import org.musicpd.android.library.SimpleLibraryActivity;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
 
 public class NowPlayingFragment extends SherlockFragment implements StatusChangeListener, TrackPositionListener,
@@ -183,8 +184,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 		updateStatus(null);
 
 		final MPDApplication app = (MPDApplication) getActivity().getApplication();
-		new Thread(new Runnable() {
-			
+		new Job() {
 			@Override
 			public void run() {
 				try {
@@ -199,7 +199,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 					Log.w(e);
 				}
 			}
-		}).start();
+		};
 	}
 
 	@Override
@@ -316,7 +316,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 						final MPDApplication app = (MPDApplication) getActivity().getApplication();
 						if (lastSentVol != progress.getProgress()) {
 							lastSentVol = progress.getProgress();
-							new Thread(new Runnable() {
+							new Job() {
 								@Override
 								public void run() {
 									try {
@@ -325,7 +325,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 										Log.w(e);
 									}
 								}
-							}).start();
+							};
 						}
 					}
 
@@ -361,7 +361,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 			public void onStopTrackingTouch(final SeekBar seekBar) {
 
 				final MPDApplication app = (MPDApplication) getActivity().getApplication();
-				new Thread(new Runnable() {
+				new Job() {
 					@Override
 					public void run() {
 						try {
@@ -370,7 +370,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 			}
 		});
 
@@ -389,7 +389,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 
 			switch (v.getId()) {
 			case R.id.stop:
-				new Thread(new Runnable() {
+				new Job() {
 					@Override
 					public void run() {
 						try {
@@ -398,7 +398,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 				if (((MPDApplication) getActivity().getApplication()).getApplicationState().streamingMode) {
 					i = new Intent(app, StreamingService.class);
 					i.setAction("org.musicpd.android.DIE");
@@ -407,7 +407,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 				}
 				break;
 			case R.id.next:
-				new Thread(new Runnable() {					
+				new Job() {
 					@Override
 					public void run() {
 						try {
@@ -416,7 +416,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 				if (((MPDApplication) getActivity().getApplication()).getApplicationState().streamingMode) {
 					i = new Intent(app, StreamingService.class);
 					i.setAction("org.musicpd.android.RESET_STREAMING");
@@ -424,7 +424,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 				}
 				break;
 			case R.id.prev:
-				new Thread(new Runnable() {					
+				new Job() {
 					@Override
 					public void run() {
 						try {
@@ -433,7 +433,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 						
 				if (((MPDApplication) getActivity().getApplication()).getApplicationState().streamingMode) {
 					i = new Intent(app, StreamingService.class);
@@ -447,7 +447,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 				 * 
 				 * @author slubman
 				 */
-				new Thread(new Runnable() {					
+				new Job() {
 					@Override
 					public void run() {
 						String state;
@@ -462,7 +462,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 							Log.w(e);
 						}
 					}
-				}).start();
+				};
 				break;
             case R.id.shuffle:
                 try {

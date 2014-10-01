@@ -18,7 +18,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,6 +52,7 @@ import org.musicpd.android.fragments.PlaylistFragmentCompat;
 import org.musicpd.android.helpers.MPDAsyncHelper.ConnectionListener;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.library.LibraryTabActivity;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.LibraryTabsUtil;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.Tools;
@@ -655,9 +655,9 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			case R.id.menu_previous:
 			case R.id.menu_play:
 			case R.id.menu_next:
-				new AsyncTask<Void, Void, Void>() {
+				new Job() {
 					@Override
-					protected Void doInBackground(Void... params) {
+					public void run() {
 						try {
 							switch (item.getItemId()) {
 								case R.id.menu_previous:
@@ -677,9 +677,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 						} catch (MPDServerException e) {
 							Log.w(e);
 						}
-						return null;
 					}
-				}.execute();
+				};
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -692,7 +691,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		final MPDApplication app = (MPDApplication) getApplicationContext();
 		switch (event.getKeyCode()) {
 		case KeyEvent.KEYCODE_VOLUME_UP:
-			new Thread(new Runnable() {
+			new Job() {
 				@Override
 				public void run() {
 					try {
@@ -701,10 +700,10 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 						Log.w(e);
 					}
 				}
-			}).start();
+			};
 			return true;
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
-			new Thread(new Runnable() {
+			new Job() {
 				@Override
 				public void run() {
 					try {
@@ -713,7 +712,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 						Log.w(e);
 					}
 				}
-			}).start();
+			};
 			return true;
 		}
 		return super.onKeyLongPress(keyCode, event);
@@ -738,18 +737,17 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			if (event.isTracking() && !event.isCanceled() && !app.getApplicationState().streamingMode) {
 				if (nowPlaying != null)
 					nowPlaying.showVolume();
-				new AsyncTask<Void, Void, Void>() {
+				new Job() {
 					@Override
-					protected Void doInBackground(Void... params) {
+					public void run() {
 						try {
 							app.oMPDAsyncHelper.oMPD.adjustVolume(event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP ? NowPlayingFragment.VOLUME_STEP
 									: -NowPlayingFragment.VOLUME_STEP);
 						} catch (MPDServerException e) {
 							Log.w(e);
 						}
-						return null;
 					}
-				}.execute();
+				};
 			}
 			return true;
 		}

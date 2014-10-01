@@ -48,6 +48,7 @@ import org.musicpd.android.MPDApplication;
 import org.musicpd.android.MainMenuActivity;
 import org.musicpd.android.R;
 import org.musicpd.android.library.PlaylistEditActivity;
+import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.Tools;
 import org.musicpd.android.tools.Utils;
@@ -319,11 +320,11 @@ public class PlaylistFragment extends SherlockListFragment implements StatusChan
 	public void onResume() {
 		super.onResume();
 		app.oMPDAsyncHelper.addStatusChangeListener(this);
-		new Thread(new Runnable() {
+		new Job() {
 			public void run() {
 				update();
 			}
-		}).start();
+		};
 	}
 
 	@Override
