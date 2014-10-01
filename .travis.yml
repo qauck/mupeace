@@ -25,8 +25,7 @@ before_install:
 
 script:
   - cd ./main
-  - test -e ../local.properties.tmpl && export properties_template=../local.properties.tmpl
-  - envsubst < ${properties_template-local.properties.tmpl} |tee local.properties
+  - envsubst < $(test -e ../local.properties.tmpl && echo ../)local.properties.tmpl |tee local.properties
   - cp ${SCALA_PATH}/lib/scala-library.jar libs/
   - ant clean
   - if grep -q release local.properties; then ant release; else ant debug; fi
