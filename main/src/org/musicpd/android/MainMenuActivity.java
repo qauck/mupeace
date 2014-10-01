@@ -549,6 +549,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		if (mpdStatus != null) {
 			setMenuChecked(menu.findItem(R.id.GMM_Single), mpdStatus.isSingle());
 			setMenuChecked(menu.findItem(R.id.GMM_Consume), mpdStatus.isConsume());
+			setMenuChecked(menu.findItem(R.id.GMM_Random), mpdStatus.isRandom());
+			setMenuChecked(menu.findItem(R.id.GMM_Repeat), mpdStatus.isRepeat());
 		}
 		return true;
 	}
@@ -649,6 +651,18 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			case R.id.GMM_Single:
 				try {
 					mpd.setSingle(!mpd.getStatus().isSingle());
+				} catch (MPDServerException e) {
+				}
+				return true;
+			case R.id.GMM_Random:
+				try {
+					mpd.setRandom(!mpd.getStatus().isRandom());
+				} catch (MPDServerException e) {
+				}
+				return true;
+			case R.id.GMM_Repeat:
+				try {
+					mpd.setRepeat(!mpd.getStatus().isRepeat());
 				} catch (MPDServerException e) {
 				}
 				return true;

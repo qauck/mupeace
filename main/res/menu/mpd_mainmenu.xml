@@ -93,6 +93,20 @@
         android:checkable="true" >
     </item>
     <item
+        android:id="@+id/GMM_Random"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/random" android:orderInCategory="12"
+        android:checkable="true" >
+    </item>
+    <item
+        android:id="@+id/GMM_Repeat"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/repeat" android:orderInCategory="12"
+        android:checkable="true" >
+    </item>
+    <item
         android:id="@+id/GMM_bonjour"
         android:icon="@drawable/ic_action_server"
         android:visible="false"
