@@ -39,7 +39,7 @@
 	<string name="removeSongs">Remove songs</string>
 	<string name="removeCountSongs">Removed %s songs</string>
 	<string name="clear">Clear</string>
-	<string name="mainMenu">Main Menu</string>
+	<string name="mainMenu">Main menu</string>
 	<string name="playlistCleared">Playlist cleared</string>
 	<string name="deletedSongFromPlaylist">Deleted song from playlist</string>
 	<string name="albumAdded">Album %s added</string>
@@ -49,11 +49,11 @@
 	<string name="host">Host</string>
 	<string name="hostDescription">Hostname or IP address for the MPD server</string>
 	<string name="hostStreaming">Streaming host</string>
-	<string name="hostStreamingDescription">Streaming server Hostname or IP-Address</string>
+	<string name="hostStreamingDescription">Hostname or IP address for streaming</string>
 	<string name="port">Port</string>
-	<string name="portDescription">MPD-Server port (Default: 6600)</string>
+	<string name="portDescription">Port for the MPD server (Default: 6600)</string>
 	<string name="password">Password</string>
-	<string name="passwordDescription">Password for the Server</string>
+	<string name="passwordDescription">Password for the MPD server</string>
 	<string name="random">Shuffle</string>
 	<string name="randomDescription">Enable/disable shuffle</string>
 	<string name="repeat">Repeat</string>
@@ -64,7 +64,7 @@
 	<string name="albumTrackSortDescription">Sort tracks within an album by number not name</string>
 	<string name="version">Version</string>
 	<string name="songs">Songs</string>
-	<string name="serverInformation">Server Information</string>
+	<string name="serverInformation">Server information</string>
 	<string name="serverInformationDescription">Information on the MPD server such as version and song count</string>
 	<string name="connectionSettings">Connection settings</string>
 	<string name="connectionSettingsDescription">Choose how to connect to the MPD server</string>
@@ -80,7 +80,7 @@
 	<string name="about">About</string>
 	<string name="aboutDescription">About Mupeace</string>
 	<string name="waitForWLAN">Waiting a Wi-Fi connection…</string>
-	<string name="connectionFailed">Connection Failed</string>
+	<string name="connectionFailed">Connection failed</string>
 	<string name="connectionFailedMessage">Connection to the MPD server failed! Check that it is running and reachable. (%s)</string>
 	<string name="connect">Connect</string>
 	<string name="connecting">Connecting…</string>
@@ -102,7 +102,7 @@
 	<string name="stream">Stream</string>
 	<string name="buffering">Buffering…</string>
 	<string name="portStreaming">Streaming port</string>
-	<string name="portStreamingDescription">MPD Streaming port (Default: 8000)</string>
+	<string name="portStreamingDescription">Port for streaming (Default: 8000)</string>
 	<string name="suffixStreaming">Streaming url suffix</string>
 	<string name="suffixStreamingDescription">Suffix to append to the stream url (ex. mpd.mp3)</string>
 	<string name="streamStopped">Streaming stopped</string>
@@ -156,7 +156,7 @@
 	<string name="widget_initial_text">Touch to select music.</string>
 	<string name="no_result">No results</string>
 	<string name="backpressToQuit">Press back again to quit</string>
-	<string name="playQueue">Play Queue</string>
+	<string name="playQueue">Play queue</string>
 	<string name="deletePlaylistPrompt">Are you sure you wish to delete %s?</string>
 	<string name="failedToDelete">Failed to delete %s</string>
 	<string name="variousArtists">Various authors</string>
@@ -168,8 +168,8 @@
 	<string name="playlistName">Playlist Name</string>
 	<string name="newPlaylistPrompt">Enter name for new playlist:</string>
 	<string name="streams">Streams</string>
-	<string name="addStream">Add Stream</string>
-	<string name="editStream">Edit Stream</string>
+	<string name="addStream">Add stream</string>
+	<string name="editStream">Edit stream</string>
 	<string name="streamAdded">Stream %s added</string>
 	<string name="loadingStreams">Loading</string>
 	<string name="streamDeleted">Stream %s deleted</string>
@@ -185,16 +185,16 @@
 	<string name="donate">Donate</string>
 	<string name="stop">Stop</string>
 	
-	<string name="behavior">Phone Behavior</string>
+	<string name="behavior">Phone behavior</string>
 	<string name="pauseOnPhoneStateChange">Pause playback</string>
 	<string name="pauseOnPhoneStateChangeDescription">Pause playback when in a call</string>
 	<string name="playOnPhoneStateChange">Resume playback</string>
 	<string name="playOnPhoneStateChangeDescription">Resume playback when a call ends</string>
 
-	<string name="libraryTabsSettings">Library tabs settings</string>
+	<string name="libraryTabsSettings">Library tab settings</string>
 	<string name="libraryTabsSettingsDescription">Select which tabs are visible and how they are ordered</string>
-	<string name="visibleTabs">Visible Tabs</string>
-	<string name="hiddenTabs">Hidden Tabs</string>
+	<string name="visibleTabs">Visible tabs</string>
+	<string name="hiddenTabs">Hidden tabs</string>
 	
 	<string name="coverArtTitle">Cover art settings</string>
 	<string name="coverArtDescription">Change how cover art is downloaded and stored</string>
@@ -217,18 +217,18 @@
     <string name="actionSongsSelected">%s songs selected</string>
     <string name="searchQueue">Search the play queue…</string>
     <string name="enableCoverOnlyOnWifi">Download via Wi-Fi only</string>
-    <string name="enableCoverOnlyOnWifiDescription">Do not download cover art over mobile network. Reduces carrier charges</string>
+    <string name="enableCoverOnlyOnWifiDescription">Do not download cover art over mobile network. Reduces carrier charges.</string>
 	<string name="enableExitConfirmation">Ask confirmation before exiting</string>
-    <string name="enableExitConfirmationDescription">Require to double tap Back to exit</string>
+    <string name="enableExitConfirmationDescription">Require a second press of back to exit</string>
     <string name="enableLightTheme">Use light theme</string>
-    <string name="enableLightNowPlayingTheme">Use light theme for "Now Playing"</string>
+    <string name="enableLightNowPlayingTheme">Use light theme for "Now playing"</string>
     <string name="enableLightNowPlayingThemeDescription">Restart the application to see the changes</string>
     <string name="share">Share</string>
-    <string name="sharePrefix">Now Playing:</string>
+    <string name="sharePrefix">Now playing:</string>
     <string name="enableTabletUI">Use tablet UI</string>
     <string name="enableTabletUIDescription">Restart the application to see the changes</string>
-    <string name="showRelated">Show Related</string>
-    <string name="hideRelated">Hide Related</string>
+    <string name="showRelated">Show related</string>
+    <string name="hideRelated">Hide related</string>
     <string name="crashReport">Please restart the application</string>
     <string name="information">Information</string>
 
