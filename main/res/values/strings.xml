@@ -54,10 +54,10 @@
 	<string name="portDescription">MPD-Server port (Default: 6600)</string>
 	<string name="password">Password</string>
 	<string name="passwordDescription">Password for the Server</string>
-	<string name="random">Random</string>
-	<string name="randomDescription">Enable/Disable random</string>
+	<string name="random">Shuffle</string>
+	<string name="randomDescription">Enable/disable shuffle</string>
 	<string name="repeat">Repeat</string>
-	<string name="repeatDescription">Enable/Disable repeat</string>
+	<string name="repeatDescription">Enable/disable repeat</string>
 	<string name="albumartist">Album Artist</string>
 	<string name="albumartistDescription">Use Album Artist tag in Composers view</string>
 	<string name="albumTrackSort">Sort by track number</string>
@@ -99,7 +99,7 @@
 	<string name="defaultSettings">Default connection settings</string>
 	<string name="wlanBasedSettingsDescription">Set WLAN based MPD-Host/Port and password</string>
 	<string name="defaultSettingsDescription">Set default MPD-Host/Port and password</string>
-	<string name="stream">Streaming</string>
+	<string name="stream">Stream</string>
 	<string name="buffering">Buffering …</string>
 	<string name="portStreaming">Streaming port</string>
 	<string name="portStreamingDescription">MPD Streaming port (Default: 8000)</string>
@@ -180,8 +180,8 @@
 	<string name="streamDetails">Stream details:</string>
 	<string name="genreAdded">Performer %s added</string>
 	<string name="enableStopButton">Show stop button</string>
-	<string name="singleMode">Single mode</string>
-	<string name="consumeMode">Consume mode</string>
+	<string name="singleMode">Single track</string>
+	<string name="consumeMode">Remove played</string>
 	<string name="donate">Donate</string>
 	<string name="stop">Stop</string>
 	
