@@ -12,6 +12,7 @@ import org.acra.*;
 import org.acra.annotation.*;
 import org.acra.sender.HttpSender.*;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,12 +26,12 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager.BadTokenException;
 
 import org.musicpd.android.helpers.MPDAsyncHelper;
 import org.musicpd.android.helpers.MPDAsyncHelper.ConnectionListener;
+import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.NetworkHelper;
 import org.musicpd.android.tools.SettingsHelper;
 
@@ -91,7 +92,8 @@ public class MPDApplication extends Application implements ConnectionListener {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		System.err.println("onCreate Application");
+		Log.tag = this.getString(R.string.app_name);
+		Log.i("onCreate Application");
 		ACRA.init(this);
 		
 		MPD.setApplicationContext(getApplicationContext());
@@ -103,6 +105,8 @@ public class MPDApplication extends Application implements ConnectionListener {
 			StrictMode.setVmPolicy(vmpolicy);
 		}
 
+		useThreadPool();
+
 		oMPDAsyncHelper = new MPDAsyncHelper();
 		oMPDAsyncHelper.addConnectionListener((MPDApplication) getApplicationContext());
 		
@@ -113,6 +117,17 @@ public class MPDApplication extends Application implements ConnectionListener {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		if(!settings.contains("albumTrackSort"))
 			settings.edit().putBoolean("albumTrackSort", true).commit();
+	}
+
+	@SuppressLint("InlinedApi")
+	void useThreadPool() {
+		try {
+			android.os.AsyncTask.class
+			.getMethod("setDefaultExecutor", java.util.concurrent.Executor.class)
+			.invoke(null, android.os.AsyncTask.THREAD_POOL_EXECUTOR);
+		} catch(Exception e) {
+			Log.w(e);
+		}
 	}
 
 	public void onPause() {
@@ -201,7 +216,7 @@ public class MPDApplication extends Application implements ConnectionListener {
 		disconnectSheduler.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				Log.w(TAG, "Disconnecting (" + DISCONNECT_TIMER + " ms timeout)");
+				Log.w("Disconnecting (" + DISCONNECT_TIMER + " ms timeout)");
 				oMPDAsyncHelper.disconnect();
 			}
 		}, DISCONNECT_TIMER);
