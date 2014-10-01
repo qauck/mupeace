@@ -525,6 +525,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		menu.findItem(R.id.menu_back_right).setVisible(page == 0);
 		menu.findItem(R.id.menu_playlist).setVisible(page == 1);
 		menu.findItem(R.id.PLM_EditPL).setVisible(page == 2);
+		menu.findItem(R.id.PLM_Clear).setVisible(page == 2);
+		menu.findItem(R.id.PLM_Save).setVisible(page == 2);
 
 		final MPDApplication app = (MPDApplication) getApplication();
 		MPDStatus status = app.getApplicationState().currentMpdStatus;
