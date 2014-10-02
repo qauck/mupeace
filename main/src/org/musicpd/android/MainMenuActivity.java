@@ -89,7 +89,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	ActionBar actionBar;
 	ArrayAdapter<CharSequence> actionBarAdapter;
 	List<String> tabs;
-	ConnectionListener persistentConnectionListener;
+	public ConnectionListener persistentConnectionListener;
 	ActionBarDrawerToggle drawerToggle;
 	DrawerLayout drawer_layout;
 	NowPlayingFragment nowPlaying;
@@ -201,6 +201,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			@Override
 			public void connectionSucceeded(String message) {
 				try {
+					Log.i("Fetching outputs following connectionSucceeded");
 					final Collection<MPDOutput> o = app.oMPDAsyncHelper.oMPD.getOutputs();
 					Iterator<MPDOutput> i = o.iterator();
 					while (i.hasNext())
@@ -220,6 +221,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				}
 			}
 		});
+		Log.i("Will fetch outputs following connectionSucceeded");
 		left_outputs.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
 			@Override
 			public void onChildViewAdded(View parent, View child) {
