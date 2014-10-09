@@ -131,12 +131,12 @@
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_action_search"
         android:showAsAction="never"
-        android:title="@string/search">
+        android:title="@string/search" android:orderInCategory="16" >
 	</item>
     <item
         android:id="@+id/GMM_Settings"
         android:icon="@android:drawable/ic_menu_preferences"
         android:showAsAction="never"
-        android:title="@string/settings">
+        android:title="@string/settings" android:orderInCategory="17" >
     </item>
 </menu>

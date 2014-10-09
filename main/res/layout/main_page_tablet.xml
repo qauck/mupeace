@@ -3,13 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainMenuActivity" >
+    tools:context=".MainPageFragment" >
 
-    <org.musicpd.android.views.MainMenuViewPager
-        android:id="@+id/pager"
+    <fragment
+        android:id="@+id/nowplaying_fragment"
+        android:name="org.musicpd.android.fragments.NowPlayingFragment"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="30" />
+        android:layout_weight="30"
+        tools:layout="@layout/main_fragment_tablet" />
 
     <fragment
         android:id="@+id/playlist_fragment"

@@ -46,6 +46,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import org.musicpd.android.MPDActivities.MPDFragmentActivity;
 import org.musicpd.android.fragments.BrowseFragment;
+import org.musicpd.android.fragments.MainPageFragment;
 import org.musicpd.android.fragments.NowPlayingFragment;
 import org.musicpd.android.fragments.PlaylistFragment;
 import org.musicpd.android.fragments.PlaylistFragmentCompat;
@@ -85,6 +86,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
     ViewPager mViewPager;	
     private int backPressExitCount;
     private Handler exitCounterReset;
+	private boolean isTablet;
 	private boolean isDualPaneMode;
 	ActionBar actionBar;
 	ArrayAdapter<CharSequence> actionBarAdapter;
@@ -100,8 +102,9 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		final MPDApplication app = (MPDApplication) getApplication();
-		setContentView(app.isTabletUiEnabled() ? R.layout.main_activity_tablet : R.layout.main_activity);
-        
+
+		isTablet = app.isTabletUiEnabled();
+		setContentView(isTablet? R.layout.main_activity_tablet : R.layout.main_activity);
 		isDualPaneMode = (findViewById(R.id.playlist_fragment) != null);
 
         exitCounterReset = new Handler();
@@ -464,7 +467,12 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 					fragment = stack.peek().getValue();
 					break;
 				case 1:
-					fragment = nowPlaying = new NowPlayingFragment();
+					if (isTablet && !isDualPaneMode) {
+						MainPageFragment page = new MainPageFragment();
+						nowPlaying = page.nowPlaying;
+						fragment = page;
+					} else
+						fragment = nowPlaying = new NowPlayingFragment();
 					break;
 				case 2:
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -479,7 +487,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
         @Override
         public int getCount() {
-			return isDualPaneMode ? 2 : 3;
+			return isTablet? 2 : 3;
         }
 
 		@Override
@@ -525,7 +533,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		menu.findItem(R.id.GMM_LibTab).setVisible(page == 1);
 		menu.findItem(R.id.menu_back_left).setVisible(page == 2);
 		menu.findItem(R.id.menu_back_right).setVisible(page == 0);
-		menu.findItem(R.id.menu_playlist).setVisible(page == 1);
+		menu.findItem(R.id.menu_playlist).setVisible(page == 1 && !isTablet);
+		menu.findItem(R.id.menu_search).setShowAsAction(page == 1 && isTablet? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
 		menu.findItem(R.id.PLM_EditPL).setVisible(page == 2);
 		menu.findItem(R.id.PLM_Clear).setVisible(page == 2);
 		menu.findItem(R.id.PLM_Save).setVisible(page == 2);
