@@ -19,8 +19,8 @@ before_install:
   - sed -i s/{source.dir}/{scala.source.dir}/g ${AAS}/build-scala.xml
   - openssl aes-128-cbc -d -salt -in .travis-debug.enc -out .travis-debug -k $key
   - export KEY_STORE="${PWD}/.travis-debug"
-  - ant_mirror=http://mirrors.ukfast.co.uk/sites/ftp.apache.org//ant/binaries/; wget "$ant_mirror$(wget $ant_mirror -O - |sed -n 's/.*>\([^<]*\.bz2\)<.*/\1/p')" -O - |tar jx
-  - export PATH="$(ls -drv1 ${PWD}/apache-ant-*|head -1)/bin:${PATH}"
+  - ls -1 android/|grep -q ^apache-ant- || (cd android; ant_mirror=http://mirrors.ukfast.co.uk/sites/ftp.apache.org//ant/binaries/; wget "$ant_mirror$(wget $ant_mirror -O - |sed -n 's/.*>\([^<]*\.bz2\)<.*/\1/p')" -O - |tar jx)
+  - export PATH="$(ls -drv1 ${PWD}/android/apache-ant-*|head -1)/bin:${PATH}"
   - export APP="$(sed 's/.*"app_name"[^>]*>\([^<]*\).*/\1/p' -n ./main/res/values-de/strings.xml)"
 
 script:
