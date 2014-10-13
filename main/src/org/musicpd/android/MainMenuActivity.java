@@ -57,6 +57,7 @@ import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.LibraryTabsUtil;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.Tools;
+import org.musicpd.android.tools.Tuple3;
 
 public class MainMenuActivity extends MPDFragmentActivity implements OnNavigationListener, ILibraryFragmentActivity {
 
@@ -298,14 +299,6 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		listView.requestLayout();
    }
 
-	static String getTitle(Fragment f) {
-		if (f instanceof BrowseFragment) {
-			return ((BrowseFragment) f).getTitle();
-		} else {
-			return f.toString();
-		}
-	}
-
 	void replace(Fragment old, String title, String label) {
 		actionBarAdapter.remove(actionBarAdapter.getItem(0));
 		actionBarAdapter.insert(title, 0);
@@ -421,10 +414,10 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		public Fragment replace(String tab) {
 			Class<? extends Object> clazz = tab == null? null : LibraryTabsUtil.getClass(MainMenuActivity.this, tab);
 			for (int i = 0, N = stack.size(); i < N; i++) {
-				Fragment f = stack.get(i).getValue();
-				if (tab == null || clazz.isInstance(f) && getTitle(f).equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
+				Tuple3<Integer, Fragment, String> t = stack.get(i);
+				if (tab == null || clazz.isInstance(t._2) && t._3.equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
 					try {
-						return i + 1 == N? null : stack.peek().getValue();
+						return i + 1 == N? null : stack.peek()._2;
 					} finally {
 						if (i + 1 < N) {
 							stack.subList(i + 1, N).clear();
@@ -440,11 +433,11 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		}
 
         int next = 100;
-        Stack<Map.Entry<Integer, Fragment>> stack = new Stack<Map.Entry<Integer, Fragment>>();
+        Stack<Tuple3<Integer, Fragment, String>> stack = new Stack<Tuple3<Integer, Fragment, String>>();
         public Fragment push(Fragment f) {
             try {
-                Fragment g = stack.isEmpty()? null : stack.peek().getValue();
-                stack.push(new AbstractMap.SimpleEntry<Integer, Fragment>(++next, f));
+                Fragment g = stack.isEmpty()? null : stack.peek()._2;
+                stack.push(new Tuple3<Integer, Fragment, String>(++next, f, getTitle(f)));
                 return g;
             } finally {
                 notifyDataSetChanged();
@@ -453,7 +446,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
         public Fragment pop() {
             try {
-                return stack.size() > 1? stack.pop().getValue() : null;
+                return stack.size() > 1? stack.pop()._2 : null;
             } finally {
                 notifyDataSetChanged();
             }
@@ -464,7 +457,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
             Fragment fragment = null;
             switch (i) {
 				case 0:
-					fragment = stack.peek().getValue();
+					fragment = stack.peek()._2;
 					break;
 				case 1:
 					if (isTablet && !isDualPaneMode) {
@@ -493,7 +486,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-				case 0: return getTitle(stack.peek().getValue());
+				case 0: return stack.peek()._3;
 				case 1: return getString(R.string.nowPlaying);
 				case 2: return getString(R.string.playQueue);
 			}
@@ -503,14 +496,14 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         @Override
         public int getItemPosition(Object object)
         {
-        	if (object instanceof BrowseFragment && object != stack.peek().getValue())
+        	if (object instanceof BrowseFragment && object != stack.peek()._2)
         		return POSITION_NONE;
             return POSITION_UNCHANGED;
         }
 
         @Override
         public long getItemId(int position) {
-            return position > 0? position : stack.peek().getKey();
+            return position > 0? position : stack.peek()._1;
         }
     }
 

@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import org.musicpd.android.R;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.StringResource;
 import org.musicpd.android.tools.Tools;
 
 public class GenresFragment extends BrowseFragment {
@@ -28,8 +29,8 @@ public class GenresFragment extends BrowseFragment {
 	}
 
 	@Override
-	public String getTitle() {
-		return getString(R.string.genres);
+	public StringResource getTitle() {
+		return new StringResource(R.string.genres);
 	}
 
 	@Override

@@ -139,12 +139,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 
 	@Override
 	public void pushLibraryFragment(Fragment fragment, String label) {
-		String title = "";
-		if (fragment instanceof BrowseFragment) {
-			title = ((BrowseFragment) fragment).getTitle();
-		} else {
-			title = fragment.toString();
-		}
+		String title = getTitle(fragment);
 		refreshActionBarNavigation(false, title);
 		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

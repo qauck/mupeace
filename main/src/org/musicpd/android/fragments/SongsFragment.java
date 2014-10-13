@@ -44,6 +44,7 @@ import org.musicpd.android.helpers.AlbumCoverDownloadListener;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.RelatedSongs;
+import org.musicpd.android.tools.StringResource;
 import org.musicpd.android.tools.Tools;
 import org.musicpd.android.views.SongDataBinder;
 
@@ -100,11 +101,11 @@ public class SongsFragment extends BrowseFragment {
 	}
 
 	@Override
-	public String getTitle() {
+	public StringResource getTitle() {
 		if (album != null) {
-			return album.getName();
+			return new StringResource(album.getName());
 		} else {
-			return getString(R.string.songs);
+			return new StringResource(R.string.songs);
 		}
 	}
 

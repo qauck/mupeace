@@ -3,6 +3,7 @@ package org.musicpd.android;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.ActionProvider;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -14,6 +15,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.MenuItem;
 
+import org.musicpd.android.fragments.BrowseFragment;
 import org.musicpd.android.tools.Log;
 
 public class MPDActivities {
@@ -295,6 +297,14 @@ public class MPDActivities {
 					return null;
 				}
 			};
+		}
+
+		protected String getTitle(Fragment f) {
+			if (f instanceof BrowseFragment) {
+				return ((BrowseFragment) f).getTitle().getString(this);
+			} else {
+				return f.toString();
+			}
 		}
 	}
 

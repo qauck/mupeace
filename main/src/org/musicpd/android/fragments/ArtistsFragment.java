@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import org.musicpd.android.R;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.StringResource;
 import org.musicpd.android.tools.Tools;
 
 public class ArtistsFragment extends BrowseFragment {
@@ -33,11 +34,11 @@ public class ArtistsFragment extends BrowseFragment {
 	}
 
 	@Override
-	public String getTitle() {
+	public StringResource getTitle() {
 		if (genre != null) {
-			return genre.getName();
+			return new StringResource(genre.getName());
 		} else {
-			return getString(R.string.artists);
+			return new StringResource(R.string.artists);
 		}
 	}
 

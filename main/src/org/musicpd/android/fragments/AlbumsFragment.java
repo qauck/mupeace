@@ -18,6 +18,7 @@ import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.tools.AlbumGroup;
 import org.musicpd.android.tools.AlbumGroups;
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.StringResource;
 import org.musicpd.android.tools.Tools;
 import org.musicpd.android.views.AlbumDataBinder;
 
@@ -53,11 +54,11 @@ public class AlbumsFragment extends BrowseFragment {
 	}
 
 	@Override
-	public String getTitle() {
+	public StringResource getTitle() {
 		if (artist != null) {
-			return artist.getName();
+			return new StringResource(artist.getName());
 		} else {
-			return getString(R.string.albums);
+			return new StringResource(R.string.albums);
 		}
 	}
 

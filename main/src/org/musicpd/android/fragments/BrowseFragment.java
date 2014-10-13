@@ -34,6 +34,7 @@ import org.musicpd.android.R;
 import org.musicpd.android.adapters.ArrayIndexerAdapter;
 import org.musicpd.android.helpers.MPDAsyncHelper.AsyncExecListener;
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.StringResource;
 
 public abstract class BrowseFragment extends SherlockFragment implements OnMenuItemClickListener, AsyncExecListener, OnItemClickListener {
 
@@ -139,8 +140,8 @@ public abstract class BrowseFragment extends SherlockFragment implements OnMenuI
 	/*
 	 * Override this to display a custom activity title
 	 */
-	public String getTitle() {
-		return "";
+	public StringResource getTitle() {
+		return new StringResource("");
 	}
 
 	/*

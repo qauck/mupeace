@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import org.musicpd.android.R;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.StringResource;
 import org.musicpd.android.tools.Tools;
 
 public class FSFragment extends BrowseFragment {
@@ -41,11 +42,11 @@ public class FSFragment extends BrowseFragment {
 	}
 
 	@Override
-	public String getTitle() {
+	public StringResource getTitle() {
 		if(directory == null) {
-			return getString(R.string.files);
+			return new StringResource(R.string.files);
 		} else {
-			return directory;
+			return new StringResource(directory);
 		}
 	}
 	

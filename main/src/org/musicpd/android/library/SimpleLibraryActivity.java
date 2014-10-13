@@ -85,8 +85,7 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 			}
 		}
 		if (rootFragment != null) {
-			if (rootFragment instanceof BrowseFragment)
-				setTitle(((BrowseFragment) rootFragment).getTitle());
+			setTitle(getTitle(rootFragment));
 			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			ft.replace(R.id.root_frame, rootFragment);
@@ -166,12 +165,7 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 
 	@Override
 	public void pushLibraryFragment(Fragment fragment, String label) {
-		String title = "";
-		if (fragment instanceof BrowseFragment) {
-			title = ((BrowseFragment) fragment).getTitle();
-		} else {
-			title = fragment.toString();
-		}
+		String title = getTitle(fragment);
 		setTitle(title);
 		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
