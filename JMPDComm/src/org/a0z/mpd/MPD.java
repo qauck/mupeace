@@ -664,10 +664,7 @@ public class MPD {
 			if (name.length() > 0)
 				result.add(name);
 		}
-		if (sortInsensitive)
-			Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
-		else
-			Collections.sort(result);
+		Collections.sort(result);
 
 		return result;
 	}
@@ -703,10 +700,7 @@ public class MPD {
 			if (name.length() > 0)
 				result.add(name);
 		}
-		if (sortInsensitive)
-			Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
-		else
-			Collections.sort(result);
+		Collections.sort(result);
 		
 		return result;
 	}
@@ -743,10 +737,7 @@ public class MPD {
 			if (name.length() > 0)
 				result.add(name);
 		}
-		if (sortInsensitive)
-			Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
-		else
-			Collections.sort(result);
+		Collections.sort(result);
 
 		return result;
 	}

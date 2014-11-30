@@ -510,7 +510,7 @@ public class Music extends Item implements FilesystemTreeEntry {
 		if (null == b) {
 			return 1;
 		}
-		return a.compareTo(b);
+		return collator.compare(a, b);
 	}
 
 	@Override
@@ -581,7 +581,7 @@ public class Music extends Item implements FilesystemTreeEntry {
 
 	public static class MusicTitleComparator implements Comparator<Music> {
 		public int compare(Music o1, Music o2) {
-			return String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle());
+			return collator.compare(o1.getTitle(), o2.getTitle());
 		}
 	}
 }

@@ -1,5 +1,8 @@
 package org.a0z.mpd;
 
+import java.text.CollationKey;
+import java.text.Collator;
+
 public abstract class Item implements Comparable<Item> {
 	public String mainText() {
 		return getName();
@@ -12,9 +15,21 @@ public abstract class Item implements Comparable<Item> {
 	}
 	abstract public String getName();
 
+	protected static final Collator collator = Collator.getInstance();
+	static {
+		collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
+		collator.setStrength(Collator.SECONDARY);
+	}
+	private CollationKey _key;
+	private CollationKey key() {
+		if (_key == null)
+			_key = collator.getCollationKey(sort());
+		return _key;
+	}
+
 	@Override
-    public int compareTo(Item o) {
-		return getName().compareToIgnoreCase(o.getName());
+	public int compareTo(Item o) {
+		return key().compareTo(o.key());
 	}
 
 	@Override
