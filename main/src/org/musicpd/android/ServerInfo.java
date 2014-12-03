@@ -27,7 +27,7 @@ public class ServerInfo {
 		Log.i("Addresses: "+TextUtils.join(", ", addresses));
 		for (InetAddress address : addresses) {
 			if (Inet4Address.class.isInstance(address) && !address.isMulticastAddress())
-				return address.getHostAddress();
+				return address.getHostAddress().intern();
 		}
 		return null;
 	}
@@ -45,11 +45,11 @@ public class ServerInfo {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof ServerInfo && ((ServerInfo) obj).name == name;
+		return obj instanceof ServerInfo && ((ServerInfo) obj).name == name && ((ServerInfo) obj).address == address && ((ServerInfo) obj).port == port;
 	}
 
 	@Override
 	public int hashCode() {
-		return name == null? 0 : name.hashCode();
+		return (name + address + port).hashCode();
 	}
 }

@@ -28,6 +28,9 @@ public class ServerDiscovery {
 				return false;
 			int index = Collections.binarySearch(this, info, ServerInfo.byName);
 			if (index < 0) index = ~index;
+			else if (info.equals(this.get(index)))
+				return false;
+			Log.i("Service Added: " + info);
 			super.add(index, info);
 			return true;
 		}
