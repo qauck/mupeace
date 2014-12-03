@@ -127,6 +127,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 	View volume;
 	View progress;
 	long volume_show_time;
+	boolean tablet;
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -205,7 +206,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final MPDApplication app = (MPDApplication) getActivity().getApplication();
-		View view = inflater.inflate(app.isTabletUiEnabled() ? R.layout.main_fragment_tablet : R.layout.main_fragment, container, false);
+		View view = inflater.inflate((tablet = app.isTabletUiEnabled()) ? R.layout.main_fragment_tablet : R.layout.main_fragment, container, false);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		settings.registerOnSharedPreferenceChangeListener(this);
@@ -729,6 +730,8 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 
 	@Override
 	public void volumeChanged(MPDStatus mpdStatus, int oldVolume) {
+		if (!tablet)
+			showVolume();
 		progressBarVolume.setProgress(mpdStatus.getVolume());
 	}
 
