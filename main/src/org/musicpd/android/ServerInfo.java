@@ -29,9 +29,6 @@ public class ServerInfo {
 			if (Inet4Address.class.isInstance(address) && !address.isMulticastAddress())
 				return address.getHostAddress();
 		}
-		for (InetAddress address : addresses) {
-			return address.getHostAddress();
-		}
 		return null;
 	}
 

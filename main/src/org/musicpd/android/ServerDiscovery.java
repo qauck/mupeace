@@ -24,6 +24,8 @@ public class ServerDiscovery {
 	Object serviceDiscovery;
 	public final List<ServerInfo> servers = new java.util.concurrent.CopyOnWriteArrayList<ServerInfo>() {
 		public boolean add(ServerInfo info) {
+			if (info.address == null)
+				return false;
 			int index = Collections.binarySearch(this, info, ServerInfo.byName);
 			if (index < 0) index = ~index;
 			super.add(index, info);
