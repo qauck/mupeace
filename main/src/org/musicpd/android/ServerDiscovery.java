@@ -16,6 +16,7 @@ import org.xbill.mDNS.ServiceInstance;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 
 public class ServerDiscovery {
 	//The multicast lock we'll have to release
@@ -48,8 +49,33 @@ public class ServerDiscovery {
 			Log.w(e);
 		}
 
+		final Handler handler = new Handler();
+
+		new Runnable() {
+			int delay = 10000;
+		    public void run() {
+		    	start();
+		    	if (!servers.isEmpty())
+		    		delay = 300000;
+		    	handler.postDelayed(this, delay);
+		    }
+		}.run();
+	}
+
+	protected void start() {
 		try {
-			mdns = new MulticastDNSService();
+			if (mdns == null)
+				mdns = new MulticastDNSService();
+
+			if (serviceDiscovery != null)
+				try {
+					mdns.stopServiceDiscovery(serviceDiscovery);
+				} finally {
+					serviceDiscovery = null;
+				}
+
+			Log.i("Service discovery starting");
+
 			serviceDiscovery = mdns.startServiceDiscovery(new Browse("_mpd._tcp.local."), new DNSSDListener() {
 				public void serviceDiscovered(Object id, ServiceInstance info) {
 					Log.i("Service Discovered: " + info);
@@ -91,7 +117,8 @@ public class ServerDiscovery {
 
 	public void onDestroy() {
 		try {
-			mdns.stopServiceDiscovery(serviceDiscovery);
+			if (serviceDiscovery != null)
+				mdns.stopServiceDiscovery(serviceDiscovery);
 			mdns.close();
 			mdns = null;
 		} catch (Exception e) {
