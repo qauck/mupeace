@@ -83,7 +83,7 @@ public class LibraryTabsUtil {
 	}
 
 	public static int getTabTitleResId(String tab) {
-		switch(tab.intern()) {
+		switch(tab) {
 			case LibraryTabsUtil.TAB_ARTISTS:
 				return R.string.artists;
 			case LibraryTabsUtil.TAB_ALBUMS:
@@ -104,7 +104,7 @@ public class LibraryTabsUtil {
 	public static final String PREFERENCE_ALBUM_LIBRARY = "enableAlbumArtLibrary";
 
 	public static Class<? extends Object> getClass(Context context, String tab) {
-		switch(tab.intern()) {
+		switch(tab) {
 			case LibraryTabsUtil.TAB_ARTISTS:
 				return ArtistsFragment.class;
 			case LibraryTabsUtil.TAB_ALBUMS:
