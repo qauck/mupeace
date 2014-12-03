@@ -127,11 +127,11 @@ public class ServerDiscovery {
 	}
 
 	public void choose(int position) {
+		ServerInfo info = servers.get(position);
 		new SettingsHelper(app, app.oMPDAsyncHelper)
 			.setHostname(
-				servers
-				.get(position)
-				.address
+				info.address,
+				info.port
 			);
 		app.reconnect();
 	}

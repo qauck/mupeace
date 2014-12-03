@@ -39,11 +39,12 @@ public class SettingsHelper implements OnSharedPreferenceChangeListener {
 		return getBooleanSetting("newWarningShown");
 	}
 	
-	public void setHostname(String hostname) {
+	public void setHostname(String hostname, int port) {
 		String wifiSSID = getCurrentSSID();
 		settings
 			.edit()
 			.putString(getStringWithSSID("hostname", wifiSSID), hostname)
+			.putString(getStringWithSSID("port", wifiSSID), "" + port)
 			.commit();
 	}
 	
