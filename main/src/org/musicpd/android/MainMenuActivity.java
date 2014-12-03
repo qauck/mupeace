@@ -256,7 +256,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		setListViewHeightBasedOnChildren(left_outputs);
 
 		final ListView left_servers = (ListView) findViewById(R.id.left_servers);
-		final ArrayAdapter<ServerInfo> servers_adapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, app.serverDiscovery.servers);
+		final ArrayAdapter<ServerInfo> servers_adapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<ServerInfo>(app.serverDiscovery.servers));
 		left_servers.setAdapter(servers_adapter);
 		app.serverDiscovery.onChanged = new Runnable() {
 			@Override
@@ -264,6 +264,9 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				left_servers.post(new Runnable() {
 					@Override
 					public void run() {
+						servers_adapter.clear();
+						servers_adapter.addAll(app.serverDiscovery.servers);
+						Log.i("Server count: " + app.serverDiscovery.servers.size());
 						servers_adapter.notifyDataSetChanged();
 						setListViewHeightBasedOnChildren(left_servers);
 					}
