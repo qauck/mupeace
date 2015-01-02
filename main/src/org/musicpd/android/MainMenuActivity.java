@@ -406,6 +406,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
      * sections of the app.
      */
+    static int next = 100;
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -434,7 +435,6 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			}
 		}
 
-        int next = 100;
         Stack<Tuple3<Integer, Fragment, String>> stack = new Stack<Tuple3<Integer, Fragment, String>>();
         public Fragment push(Fragment f) {
             try {
