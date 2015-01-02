@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.a0z.mpd.MPD;
 import org.a0z.mpd.MPDStatus;
 import org.a0z.mpd.MPDStatusMonitor;
+import org.a0z.mpd.WeakLinkedList;
 import org.a0z.mpd.event.StatusChangeListener;
 import org.a0z.mpd.event.TrackPositionListener;
 import org.a0z.mpd.exception.MPDServerException;
@@ -18,7 +19,6 @@ import android.util.Log;
 
 import org.musicpd.android.MPDApplication;
 import org.musicpd.android.tools.Tools;
-import org.musicpd.android.tools.WeakLinkedList;
 
 /**
  * This Class implements the whole MPD Communication as a thread. It also "translates" the monitor event of the JMPDComm Library back to the

@@ -3,7 +3,7 @@
  *  available online at http://www.uportal.org/license.html
  */
 
-package org.musicpd.android.tools;
+package org.a0z.mpd;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;

@@ -9,6 +9,7 @@ import org.a0z.mpd.Artist;
 import org.a0z.mpd.MPD;
 import org.a0z.mpd.MPDStatus;
 import org.a0z.mpd.Music;
+import org.a0z.mpd.event.ClientActionListener;
 import org.a0z.mpd.event.StatusChangeListener;
 import org.a0z.mpd.event.TrackPositionListener;
 import org.a0z.mpd.exception.MPDServerException;
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -61,7 +63,7 @@ import org.musicpd.android.library.SimpleLibraryActivity;
 import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
 
-public class NowPlayingFragment extends SherlockFragment implements StatusChangeListener, TrackPositionListener,
+public class NowPlayingFragment extends SherlockFragment implements ClientActionListener, StatusChangeListener, TrackPositionListener,
 		OnSharedPreferenceChangeListener, OnItemClickListener {
 	
 	public static final String PREFS_NAME = "mupeace.properties";
@@ -153,6 +155,7 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 		super.onStart();
 		noSongInfo = getResources().getString(R.string.noSongInfo);
 		MPDApplication app = (MPDApplication) getActivity().getApplication();
+		app.oMPDAsyncHelper.oMPD.addClientActionListener(this);
 		app.oMPDAsyncHelper.addStatusChangeListener(this);
 		app.oMPDAsyncHelper.addTrackPositionListener(this);
 		app.setActivity(this);
@@ -730,13 +733,26 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 
 	@Override
 	public void volumeChanged(MPDStatus mpdStatus, int oldVolume) {
-		if (!tablet)
-			showVolume();
 		progressBarVolume.setProgress(mpdStatus.getVolume());
+	}
+
+	@Override
+	public void volumeAdjusted(int newVolume, int oldVolume) {
+		showVolume();
+	}
+
+	boolean isLandscape() {
+		try {
+			return tablet || this.getActivity().getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT;
+		} catch(Exception e) {
+			return true;
+		}
 	}
 
 	final static long show_time = 1000;
 	public void showVolume() {
+		if (isLandscape())
+			return;
 		volume_show_time = new Date().getTime();
 		volume.post(new Runnable() {
 			@Override
@@ -747,6 +763,8 @@ public class NowPlayingFragment extends SherlockFragment implements StatusChange
 					@Override
 					public void run() {
 						if (volume_show_time + show_time <= new Date().getTime()) {
+							if (isLandscape())
+								return;
 							volume.setVisibility(View.GONE);
 							progress.setVisibility(View.VISIBLE);
 						}

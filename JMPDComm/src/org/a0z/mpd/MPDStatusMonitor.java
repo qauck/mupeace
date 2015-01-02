@@ -6,7 +6,7 @@
  */
 package org.a0z.mpd;
 
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
 import org.a0z.mpd.event.StatusChangeListener;
@@ -24,8 +24,8 @@ public class MPDStatusMonitor extends Thread {
 	private MPD mpd;
 	private boolean giveup;
 
-	private LinkedList<StatusChangeListener> statusChangedListeners;
-	private LinkedList<TrackPositionListener> trackPositionChangedListeners;
+	private Collection<StatusChangeListener> statusChangedListeners;
+	private Collection<TrackPositionListener> trackPositionChangedListeners;
 
 	/**
 	 * Constructs a MPDStatusMonitor.
@@ -41,8 +41,8 @@ public class MPDStatusMonitor extends Thread {
 		this.mpd = mpd;
 		this.delay = delay;
 		this.giveup = false;
-		this.statusChangedListeners = new LinkedList<StatusChangeListener>();
-		this.trackPositionChangedListeners = new LinkedList<TrackPositionListener>();
+		this.statusChangedListeners = new WeakLinkedList<StatusChangeListener>();
+		this.trackPositionChangedListeners = new WeakLinkedList<TrackPositionListener>();
 		
 		// integrate MPD stuff into listener lists
 		addStatusChangeListener(mpd.getPlaylist());

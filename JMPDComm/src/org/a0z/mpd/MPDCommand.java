@@ -33,6 +33,7 @@ public class MPDCommand {
 	public static final String MPD_CMD_STATUS = "status";
 	public static final String MPD_CMD_STOP = "stop";
 	public static final String MPD_CMD_SET_VOLUME = "setvol";
+	public static final String MPD_CMD_ADJUST_VOLUME = "volume";
 	public static final String MPD_CMD_OUTPUTS = "outputs";
 	public static final String MPD_CMD_OUTPUTENABLE = "enableoutput";
 	public static final String MPD_CMD_OUTPUTDISABLE = "disableoutput";

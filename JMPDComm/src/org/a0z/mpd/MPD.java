@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.a0z.mpd.event.ClientActionListener;
+import org.a0z.mpd.event.StatusChangeListener;
 import org.a0z.mpd.exception.MPDClientException;
 import org.a0z.mpd.exception.MPDConnectionException;
 import org.a0z.mpd.exception.MPDServerException;
@@ -28,6 +30,16 @@ public class MPD {
 	private MPDStatus mpdStatus;
 	private MPDPlaylist playlist;
 	private Directory rootDirectory;
+	private Collection<ClientActionListener> clientActionListeners = new WeakLinkedList<ClientActionListener>("ClientActionListeners"); 
+
+	void volumeAdjusted(int newVolume, int oldVolume) {
+		for (ClientActionListener listener : clientActionListeners)
+			listener.volumeAdjusted(newVolume, oldVolume);
+	}
+
+	public void addClientActionListener(ClientActionListener listener) {
+		clientActionListeners.add(listener);
+	}
 
 	static private boolean useAlbumArtist = false;
 	static private boolean sortByTrackNumber = true;
@@ -174,10 +186,12 @@ public class MPD {
 			throw new MPDServerException("MPD Connection is not established");
 
 		// calculate final volume (clip value with [0, 100])
-		int vol = getVolume() + modifier;
+		int old = getVolume(true);
+		int vol = old + modifier;
 		vol = Math.max(MPDCommand.MIN_VOLUME, Math.min(MPDCommand.MAX_VOLUME, vol));
+		volumeAdjusted(vol, old);
 
-		mpdConnection.sendCommand(MPDCommand.MPD_CMD_SET_VOLUME, Integer.toString(vol));
+		mpdConnection.sendCommand(MPDCommand.MPD_CMD_ADJUST_VOLUME, Integer.toString(modifier));
 	}
 
 	/**
@@ -450,8 +464,12 @@ public class MPD {
 	 * @throws MPDServerException
 	 *            if an error occur while contacting server.
 	 */
+	public int getVolume(boolean cached) throws MPDServerException {
+		return (cached && mpdStatus != null? mpdStatus : this.getStatus()).getVolume();
+	}
+
 	public int getVolume() throws MPDServerException {
-		return this.getStatus().getVolume();
+		return getVolume(false);
 	}
 
 	/**
@@ -1014,6 +1032,7 @@ public class MPD {
 			throw new MPDServerException("MPD Connection is not established");
 		
 		int vol = Math.max(MPDCommand.MIN_VOLUME, Math.min(MPDCommand.MAX_VOLUME, volume));
+		volumeAdjusted(vol, getVolume(true));
 		mpdConnection.sendCommand(MPDCommand.MPD_CMD_SET_VOLUME, Integer.toString(vol));
 	}
 

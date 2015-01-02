@@ -95,7 +95,6 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	public ConnectionListener persistentConnectionListener;
 	ActionBarDrawerToggle drawerToggle;
 	DrawerLayout drawer_layout;
-	NowPlayingFragment nowPlaying;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -463,12 +462,10 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 					fragment = stack.peek()._2;
 					break;
 				case 1:
-					if (isTablet && !isDualPaneMode) {
-						MainPageFragment page = new MainPageFragment();
-						nowPlaying = page.nowPlaying;
-						fragment = page;
-					} else
-						fragment = nowPlaying = new NowPlayingFragment();
+					if (isTablet && !isDualPaneMode)
+						fragment = new MainPageFragment();
+					else
+						fragment = new NowPlayingFragment();
 					break;
 				case 2:
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -758,8 +755,6 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		case KeyEvent.KEYCODE_VOLUME_UP:
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			if (event.isTracking() && !event.isCanceled() && !app.getApplicationState().streamingMode) {
-				if (nowPlaying != null)
-					nowPlaying.showVolume();
 				new Job() {
 					@Override
 					public void run() {
