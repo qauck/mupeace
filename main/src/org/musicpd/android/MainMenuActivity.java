@@ -34,6 +34,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -190,7 +191,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
                 mViewPager.setCurrentItem(0, true);
             }
         });
-        setListViewHeightBasedOnChildren(left_library);
+        setListViewHeightBasedOnChildren(left_library, true);
 
 		final ListView left_outputs = (ListView) findViewById(R.id.left_outputs);
 		final List<MPDOutput> outputs = new ArrayList<MPDOutput>();
@@ -216,7 +217,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 							outputs.clear();
 							outputs.addAll(o);
 							outputs_adapter.notifyDataSetChanged();
-							setListViewHeightBasedOnChildren(left_outputs);
+							setListViewHeightBasedOnChildren(left_outputs, false);
 						}
 					});
 				} catch (MPDServerException e) {
@@ -252,7 +253,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				}
 			}
 		});
-		setListViewHeightBasedOnChildren(left_outputs);
+		setListViewHeightBasedOnChildren(left_outputs, false);
 
 		final ListView left_servers = (ListView) findViewById(R.id.left_servers);
 		final ArrayAdapter<ServerInfo> servers_adapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<ServerInfo>(app.serverDiscovery.servers));
@@ -267,7 +268,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 						servers_adapter.addAll(app.serverDiscovery.servers);
 						Log.i("Server count: " + app.serverDiscovery.servers.size());
 						servers_adapter.notifyDataSetChanged();
-						setListViewHeightBasedOnChildren(left_servers);
+						setListViewHeightBasedOnChildren(left_servers, false);
 					}
 				});
 			}
@@ -279,11 +280,12 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 				drawer_layout.closeDrawers();
 			}
 		});
-		setListViewHeightBasedOnChildren(left_servers);
+		setListViewHeightBasedOnChildren(left_servers, false);
 
 	}
 
-	public void setListViewHeightBasedOnChildren(ListView listView) {
+	int minListItemSize = 96;
+	public void setListViewHeightBasedOnChildren(ListView listView, boolean record_size) {
 		ArrayAdapter<?> listAdapter = (ArrayAdapter<?>) listView.getAdapter(); 
 		if (listAdapter == null)
 			return;
@@ -291,12 +293,18 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		int totalHeight = 0, N = listAdapter.getCount();
 		for (int i = 0; i < N; i++) {
 			final View listItem = listAdapter.getView(i, null, listView);
-			listItem.measure(0, 0);
-			totalHeight += Math.max(96, listItem.getMeasuredHeight());
+			listItem.measure(
+				MeasureSpec.makeMeasureSpec(ViewGroup.LayoutParams.MATCH_PARENT, MeasureSpec.EXACTLY),
+				MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+			int size = Math.max(minListItemSize, listItem.getMeasuredHeight());
+			totalHeight += size;
+			if (record_size)
+				minListItemSize = size;
 		}
 
 		ViewGroup.LayoutParams params = listView.getLayoutParams();
 		params.height = totalHeight + (listView.getDividerHeight() * (N - 1));
+		Log.i("setListViewHeightBasedOnChildren " + listView + " " + N + " " + params.height);
 		listView.setLayoutParams(params);
 		listView.requestLayout();
    }
