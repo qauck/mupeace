@@ -177,7 +177,7 @@ public class SearchActivity extends MPDActivity implements OnMenuItemClickListen
 	
 	protected void add(Artist artist, Album album, boolean replace, boolean play) {
 		try {
-			app.oMPDAsyncHelper.oMPD.add(artist, album, replace, play);
+			app.oMPDAsyncHelper.oMPD.add(null, artist, album, replace, play);
 			Tools.notifyUser(String.format(getResources().getString(addedString), null == album ? artist.getName() : (null == artist ? album.getName() : artist.getName() + " - " + album.getName())), this);
 		} catch (Exception e) {
 			Log.w(e);

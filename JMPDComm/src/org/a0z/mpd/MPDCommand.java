@@ -56,6 +56,7 @@ public class MPDCommand {
 
 	public static final String MPD_FIND_ALBUM = "album";
 	public static final String MPD_FIND_ARTIST = "artist";
+	public static final String MPD_FIND_GENRE = "genre";
 	
 	public static final String MPD_SEARCH_ALBUM = "album";
 	public static final String MPD_SEARCH_ARTIST = "artist";

@@ -73,9 +73,9 @@ public class SimpleLibraryActivity extends MPDFragmentActivity implements ILibra
 			if (targetElement == null)
 				targetElement = intent.getStringExtra(EXTRA_FOLDER);
 			if (targetElement instanceof Artist) {
-				rootFragment = new AlbumsFragment().init((Artist) targetElement);
+				rootFragment = new AlbumsFragment().init(null, (Artist) targetElement);
 			} else if (targetElement instanceof Album) {
-				rootFragment = new SongsFragment().init((Artist) getIntent().getParcelableExtra(EXTRA_ARTIST), (Album) targetElement);
+				rootFragment = new SongsFragment().init(null, (Artist) getIntent().getParcelableExtra(EXTRA_ARTIST), (Album) targetElement);
 			} else {
 				rootFragment = new FSFragment().init(
 					targetElement instanceof String

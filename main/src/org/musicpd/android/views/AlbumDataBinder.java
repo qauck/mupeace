@@ -79,7 +79,7 @@ public class AlbumDataBinder implements ArrayIndexerDataBinder {
 
 			try {
 				// load songs for this album
-				songs = app.oMPDAsyncHelper.oMPD.getSongs(((artist != null) ? new Artist(artist, 0) : null), new Album(album));
+				songs = app.oMPDAsyncHelper.oMPD.getSongs(null, ((artist != null) ? new Artist(artist, 0) : null), new Album(album));
 
 				if (songs.size() > 0) {
 					Music song = (Music) songs.get(0);

@@ -1,6 +1,7 @@
 package org.musicpd.android.fragments;
 
 import org.a0z.mpd.Artist;
+import org.a0z.mpd.Genre;
 import org.a0z.mpd.Item;
 
 import org.musicpd.android.R;
@@ -40,8 +41,8 @@ public class AlbumGroupFragment extends AlbumsFragment {
 		super.onSaveInstanceState(outState);
 	}
 
-	public AlbumGroupFragment init(Artist a, AlbumGroup g) {
-		super.init(a);
+	public AlbumGroupFragment init(Genre G, Artist a, AlbumGroup g) {
+		super.init(G, a);
 		return init(g);
 	}
 

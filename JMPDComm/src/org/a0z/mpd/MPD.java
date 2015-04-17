@@ -492,7 +492,7 @@ public class MPD {
 	 *            if an error occur while contacting server.
 	 */
 	public List<String> listAlbums() throws MPDServerException {
-		return listAlbums(null, false, false);
+		return listAlbums(null, null, false, false);
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class MPD {
 	 *            if an error occur while contacting server.
 	 */
 	public List<String> listAlbums(boolean useAlbumArtist) throws MPDServerException {
-		return listAlbums(null, useAlbumArtist, false);
+		return listAlbums(null, null, useAlbumArtist, false);
 	}
 
 	/**
@@ -519,8 +519,8 @@ public class MPD {
 	 * @throws MPDServerException
 	 *            if an error occur while contacting server.
 	 */
-	public List<String> listAlbums(String artist, boolean useAlbumArtist) throws MPDServerException {
-		return listAlbums(artist, useAlbumArtist, true);
+	public List<String> listAlbums(String genre, String artist, boolean useAlbumArtist) throws MPDServerException {
+		return listAlbums(genre, artist, useAlbumArtist, true);
 	}
 
 	/**
@@ -536,14 +536,19 @@ public class MPD {
 	 * @throws MPDServerException
 	 *            if an error occur while contacting server.
 	 */
-	public List<String> listAlbums(String artist, boolean useAlbumArtist, boolean includeUnknownAlbum) throws MPDServerException {
+	public List<String> listAlbums(String genre, String artist, boolean useAlbumArtist, boolean includeUnknownAlbum) throws MPDServerException {
 		if(!isConnected())
 			throw new MPDServerException("MPD Connection is not established");
 		
 		boolean foundSongWithoutAlbum = false;
 
 		List<String> response;
-		if (useAlbumArtist)
+		if (genre != null)
+		    response = mpdConnection.sendCommand(
+	    		MPDCommand.MPD_CMD_LIST_TAG, MPDCommand.MPD_TAG_ALBUM,
+	    		useAlbumArtist? MPDCommand.MPD_TAG_ALBUM_ARTIST : MPDCommand.MPD_TAG_ARTIST, artist,
+				MPDCommand.MPD_TAG_GENRE, genre);
+		else if (useAlbumArtist)
 		    response = mpdConnection.sendCommand(MPDCommand.MPD_CMD_LIST_TAG, MPDCommand.MPD_TAG_ALBUM, MPDCommand.MPD_TAG_ALBUM_ARTIST, artist);
 		else
 		    response = mpdConnection.sendCommand(MPDCommand.MPD_CMD_LIST_TAG, MPDCommand.MPD_TAG_ALBUM, artist);
@@ -615,14 +620,14 @@ public class MPD {
 	}
 
 	public int getAlbumCount(Artist artist, boolean useAlbumArtistTag) throws MPDServerException {
-		return listAlbums(artist.getName(), useAlbumArtistTag).size();
+		return listAlbums(null, artist.getName(), useAlbumArtistTag).size();
 	}
 
 	public int getAlbumCount(String artist, boolean useAlbumArtistTag) throws MPDServerException {
 		if (mpdConnection == null) {
 			throw new MPDServerException("MPD Connection is not established");
 		}
-		return listAlbums(artist, useAlbumArtistTag).size();
+		return listAlbums(null, artist, useAlbumArtistTag).size();
 	}
 
 	/**
@@ -1205,14 +1210,19 @@ public class MPD {
 		return mpdConnection.sendCommand(MPDCommand.MPD_CMD_STICKER, "list", type, uri);
 	}
 
-	public List<Music> getSongs(Artist artist, Album album) throws MPDServerException {
+	public List<Music> getSongs(Genre genre, Artist artist, Album album) throws MPDServerException {
+		boolean haveGenre = (null != genre);
 		boolean haveArtist = (null != artist);
 		boolean haveAlbum = (null != album) && !(album instanceof UnknownAlbum);
         String[] search = null;
 
 		int pos=0;
-        if (haveAlbum || haveArtist) {
-        	search=new String[haveAlbum && haveArtist ? 4 : 2];
+        if (haveGenre || haveAlbum || haveArtist) {
+        	search=new String[(haveGenre? 2 : 0) + (haveAlbum?2:0) + (haveArtist ? 2 : 0)];
+        	if (haveGenre) {
+        		search[pos++]=MPDCommand.MPD_FIND_GENRE;
+        		search[pos++]=genre.getName();
+        	}
         	if (haveArtist) {
         		search[pos++]=MPD.useAlbumArtist() ? MPDCommand.MPD_TAG_ALBUM_ARTIST : MPDCommand.MPD_FIND_ARTIST;
         		search[pos++]=artist.getName();
@@ -1240,15 +1250,9 @@ public class MPD {
         return genericSearch(MPDCommand.MPD_CMD_LISTALLINFO, new String[] { directory }, true);
 	}
 
-	public List<Album> getAlbums(Artist artist) throws MPDServerException {
-		List<String> albumNames = null;
+	public List<Album> getAlbums(Genre genre, Artist artist) throws MPDServerException {
+		List<String> albumNames = listAlbums(genre == null? null : genre.getName(), artist == null? null : artist.getName(), artist != null && useAlbumArtist);
 		List<Album> albums = null;
-
-		if(artist != null) {
-			albumNames = listAlbums(artist.getName(), useAlbumArtist);
-		}else{
-			albumNames = listAlbums(false);
-		}
 
 		if (null!=albumNames && !albumNames.isEmpty()) {
 			albums=new ArrayList<Album>();
@@ -1380,11 +1384,11 @@ public class MPD {
 	}
 
 	public void add(Artist artist, boolean replace, boolean play) throws MPDServerException {
-		add(artist, null, replace, play);
+		add(null, artist, null, replace, play);
 	}
 
 	public void add(Album album, boolean replace, boolean play) throws MPDServerException {
-		add(null, album, replace, play);
+		add(null, null, album, replace, play);
 	}
 
 	public void add(final FilesystemTreeEntry music, boolean replace, boolean play) throws MPDServerException {
@@ -1405,12 +1409,12 @@ public class MPD {
 		add(r, replace, play);
 	}
 
-	public void add(final Artist artist, final Album album, boolean replace, boolean play) throws MPDServerException {
+	public void add(final Genre genre, final Artist artist, final Album album, boolean replace, boolean play) throws MPDServerException {
 		final Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					final ArrayList<Music> songs = new ArrayList<Music>(getSongs(artist, album));
+					final ArrayList<Music> songs = new ArrayList<Music>(getSongs(genre, artist, album));
 					getPlaylist().addAll(songs);
 				} catch (MPDServerException e) {
 					e.printStackTrace();
@@ -1504,15 +1508,15 @@ public class MPD {
 	}
 
 	public void addToPlaylist(String playlistName, Artist artist) throws MPDServerException {
-		addToPlaylist(playlistName, artist, null);
+		addToPlaylist(playlistName, null, artist, null);
 	}
 
 	public void addToPlaylist(String playlistName, Album album) throws MPDServerException {
-		addToPlaylist(playlistName, null, album);
+		addToPlaylist(playlistName, null, null, album);
 	}
 
-	public void addToPlaylist(String playlistName, Artist artist, Album album) throws MPDServerException {
-		addToPlaylist(playlistName, new ArrayList<Music>(getSongs(artist, album)));
+	public void addToPlaylist(String playlistName, Genre genre, Artist artist, Album album) throws MPDServerException {
+		addToPlaylist(playlistName, new ArrayList<Music>(getSongs(genre, artist, album)));
 	}
 
 	public void addToPlaylist(String playlistName, Music music) throws MPDServerException {

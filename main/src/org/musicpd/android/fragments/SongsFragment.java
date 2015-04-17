@@ -2,6 +2,7 @@ package org.musicpd.android.fragments;
 
 import org.a0z.mpd.Album;
 import org.a0z.mpd.Artist;
+import org.a0z.mpd.Genre;
 import org.a0z.mpd.Item;
 import org.a0z.mpd.MPDCommand;
 import org.a0z.mpd.Music;
@@ -51,9 +52,11 @@ import org.musicpd.android.views.SongDataBinder;
 public class SongsFragment extends BrowseFragment {
 
 	private static final int FALLBACK_COVER_SIZE = 80; // In DIP
+	private static final String EXTRA_GENRE = "genre";
 	private static final String EXTRA_ARTIST = "artist";
 	private static final String EXTRA_ALBUM = "album";
 
+	Genre genre = null;
 	Album album = null;
 	Artist artist = null;
 	TextView headerArtist;
@@ -76,10 +79,11 @@ public class SongsFragment extends BrowseFragment {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		if (icicle != null)
-			init((Artist) icicle.getParcelable(EXTRA_ARTIST), (Album) icicle.getParcelable(EXTRA_ALBUM));
+			init((Genre) icicle.getParcelable(EXTRA_GENRE), (Artist) icicle.getParcelable(EXTRA_ARTIST), (Album) icicle.getParcelable(EXTRA_ALBUM));
 	}
 
-	public SongsFragment init(Artist ar, Album al) {
+	public SongsFragment init(Genre g, Artist ar, Album al) {
+		genre = g;
 		artist = ar;
 		album = al;
 		return this;
@@ -187,7 +191,7 @@ public class SongsFragment extends BrowseFragment {
 										return;
 								}
 								try {
-									app.oMPDAsyncHelper.oMPD.add(artist, album, replace, play);
+									app.oMPDAsyncHelper.oMPD.add(genre, artist, album, replace, play);
 									Tools.notifyUser(String.format(getResources().getString(R.string.albumAdded), album), activity);
 								} catch (Exception e) {
 									Log.w(e);
@@ -212,6 +216,7 @@ public class SongsFragment extends BrowseFragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
+		outState.putParcelable(EXTRA_GENRE, genre);
 		outState.putParcelable(EXTRA_ALBUM, album);
 		outState.putParcelable(EXTRA_ARTIST, artist);
 		super.onSaveInstanceState(outState);
@@ -235,7 +240,7 @@ public class SongsFragment extends BrowseFragment {
 	{
 		Artist artist = new Artist(item.getArtist(), 1);
 		Album album = new Album(item.getAlbum());
-		((ILibraryFragmentActivity) getActivity()).pushLibraryFragment(new SongsFragment().init(artist, album),
+		((ILibraryFragmentActivity) getActivity()).pushLibraryFragment(new SongsFragment().init(genre, artist, album),
 				"songs");
 	}
 
@@ -277,7 +282,7 @@ public class SongsFragment extends BrowseFragment {
 			if (getActivity() == null)
 				return;
 			if (songs == null)
-				songs = app.oMPDAsyncHelper.oMPD.getSongs(artist, album);
+				songs = app.oMPDAsyncHelper.oMPD.getSongs(genre, artist, album);
 			if (showRelated && related == null)
 				related = RelatedSongs.items(app.oMPDAsyncHelper.oMPD, songs);
 			items = showRelated? related : songs;
