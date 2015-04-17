@@ -1,9 +1,9 @@
 package org.musicpd.android.adapters;
 
+import java.text.CollationKey;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,8 +24,9 @@ import org.musicpd.android.views.holders.AbstractViewHolder;
 public class ArrayIndexerAdapter extends ArrayAdapter<Item> implements SectionIndexer {
 	private static final int TYPE_DEFAULT = 0;
 	
-	HashMap<String, Integer> alphaIndexer;
-	String[] sections;
+	HashMap<CollationKey, Integer> alphaIndexer;
+	CollationKey[] sections;
+	String[] names;
 	ArrayIndexerDataBinder dataBinder = null;
 	LayoutInflater inflater;
 	List<Item> items;
@@ -55,7 +56,7 @@ public class ArrayIndexerAdapter extends ArrayAdapter<Item> implements SectionIn
 		this.items = (List<Item>) items;
 		
 		// here is the tricky stuff
-		alphaIndexer = new HashMap<String, Integer>(); 
+		alphaIndexer = new HashMap<CollationKey, Integer>(); 
 		// in this hashmap we will store here the positions for
 		// the sections
 
@@ -63,7 +64,7 @@ public class ArrayIndexerAdapter extends ArrayAdapter<Item> implements SectionIn
 		for (int i = size - 1; i >= 0; i--) {
 			Item element = items.get(i);
 			if (element != null)
-				alphaIndexer.put(element.sort().substring(0, 1).toUpperCase(), i);
+				alphaIndexer.put(Item.collator.getCollationKey(element.sort().substring(0, 1).toUpperCase()), i);
 		//We store the first letter of the word, and its index.
 		//The Hashmap will replace the value for identical keys are putted in
 		} 
@@ -75,23 +76,18 @@ public class ArrayIndexerAdapter extends ArrayAdapter<Item> implements SectionIn
 		// array .it must contains the keys, and must (I do so...) be
 		// ordered alphabetically
 
-		Set<String> keys = alphaIndexer.keySet(); // set of letters ...sets
-		// cannot be sorted...
+		Set<CollationKey> keys = alphaIndexer.keySet(); // set of letters ...sets
 
-		Iterator<String> it = keys.iterator();
-		ArrayList<String> keyList = new ArrayList<String>(); // list can be
-		// sorted
+		sections = new CollationKey[keys.size()];
+		keys.toArray(sections);
+		Arrays.sort(sections);
 
-		while (it.hasNext()) {
-			String key = it.next();
-			keyList.add(key);
+		{
+			int i = 0;
+			names = new String[sections.length];
+			for(CollationKey section : sections)
+				names[i++] = section.getSourceString();
 		}
-
-		Collections.sort(keyList);
-
-		sections = new String[keyList.size()]; // simple conversion to an
-		// array of object
-		keyList.toArray(sections);
 	}
 	
 	public ArrayIndexerDataBinder getDataBinder() {
@@ -104,7 +100,7 @@ public class ArrayIndexerAdapter extends ArrayAdapter<Item> implements SectionIn
 	
 	@Override
 	public int getPositionForSection(int section) {
-		String letter = sections[section >= sections.length ? sections.length - 1 : section];
+		CollationKey letter = sections[section >= sections.length ? sections.length - 1 : section];
 		return alphaIndexer.get(letter);
 	}
 
@@ -127,7 +123,7 @@ public class ArrayIndexerAdapter extends ArrayAdapter<Item> implements SectionIn
 
 	@Override
 	public Object[] getSections() {
-		return sections;
+		return names;
 	}
 	
 	@Override

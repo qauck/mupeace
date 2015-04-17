@@ -15,7 +15,7 @@ public abstract class Item implements Comparable<Item> {
 	}
 	abstract public String getName();
 
-	protected static final Collator collator = Collator.getInstance();
+	public static final Collator collator = Collator.getInstance();
 	static {
 		collator.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
 		collator.setStrength(Collator.SECONDARY);
