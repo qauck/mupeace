@@ -16,8 +16,9 @@ object RelatedSongs {
     xs
     //.sortBy(x => x.getDisc() * 1000 + x.getTrack())
     .groupByStable(x => dir.replaceAllIn(x.getFullpath(), "$1"))
-    .flatMap(g => mpd.getSongs(g._1).asScala)
-    .map(x => if (x == null) null else x.setSelected(selected.contains(x)))
+    .flatMap(g => {Log.i("Finding related in "+g._1); mpd.getSongs(g._1).asScala})
+    .filterNot(x => x == null || x.hashCode() == 0)
+    .map(x => x.setSelected(selected.contains(x)))
     /*.foldLeft(collection.mutable.LinkedHashSet[Music]())((s,g) =>
       s ++ mpd.getSongs(g._1).asScala
     )*/

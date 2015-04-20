@@ -495,7 +495,7 @@ public class Music extends Item implements FilesystemTreeEntry {
 
 	@Override
 	public int hashCode() {
-		return fullpath.hashCode();
+		return fullpath == null ? 0 : fullpath.hashCode();
 	}
 	
 	@Override
