@@ -25,6 +25,7 @@ before_install:
   - export APP="$(sed 's/.*"app_name"[^>]*>\([^<]*\).*/\1/p' -n ./main/res/values-de/strings.xml)"
 
 script:
+  - v=$(ls -v1 $ANDROID_HOME/platforms|tail -1); for i in */project.properties; do sed -i "s/^target=android-.*/target=$v/" $i; done
   - cd ./main
   - envsubst < $(test -e ../local.properties.tmpl && echo ../)local.properties.tmpl |tee local.properties
   - cp ${SCALA_PATH}/lib/scala-library.jar libs/
