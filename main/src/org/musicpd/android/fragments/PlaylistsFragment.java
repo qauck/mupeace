@@ -19,6 +19,7 @@ import org.musicpd.android.R;
 import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.library.PlaylistEditActivity;
 import org.musicpd.android.tools.Log;
+import org.musicpd.android.tools.StringResource;
 import org.musicpd.android.tools.Tools;
 
 public class PlaylistsFragment extends BrowseFragment {
@@ -33,7 +34,11 @@ public class PlaylistsFragment extends BrowseFragment {
 	public int getLoadingText() {
 		return R.string.loadingPlaylists;
 	}
-	
+
+	public StringResource getTitle() {
+		return new StringResource(R.string.playlists);
+	}
+
 	@Override
 	public void onItemClick(AdapterView adapterView, View v, int position, long id) {
 		((ILibraryFragmentActivity) getActivity()).pushLibraryFragment(new StoredPlaylistFragment().init(items.get(position).getName()),

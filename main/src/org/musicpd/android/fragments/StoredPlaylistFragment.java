@@ -4,41 +4,46 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.a0z.mpd.Item;
+import org.a0z.mpd.MPDCommand;
 import org.a0z.mpd.Music;
 import org.a0z.mpd.exception.MPDServerException;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import org.musicpd.android.MPDApplication;
 import org.musicpd.android.R;
 import org.musicpd.android.library.LibraryTabActivity;
 import org.musicpd.android.library.PlaylistEditActivity;
+import org.musicpd.android.tools.StringResource;
 
-public class StoredPlaylistFragment extends SherlockListFragment {
+public class StoredPlaylistFragment extends BrowseFragment {
 	private static final String EXTRA_PLAYLIST_NAME = "playlist";
 
-	private ArrayList<HashMap<String, Object>> songlist;
-	private List<Music> musics;
+	private ArrayList<HashMap<String, Object>> songlist = new ArrayList<HashMap<String, Object>>();
 
 	private String playlistName;
-	private MPDApplication app;
 
 	public StoredPlaylistFragment() {
-		super();
+		super(R.string.addSong, R.string.songAdded, MPDCommand.MPD_SEARCH_TITLE);
 		setHasOptionsMenu(true);
 	}
 	
+	public StringResource getTitle() {
+		if (playlistName == null)
+			return new StringResource(R.string.playlist);
+		else
+			return new StringResource(playlistName);
+	}
+
 	public StoredPlaylistFragment init(String name) {
 		playlistName = name;
 		return this;
@@ -58,12 +63,6 @@ public class StoredPlaylistFragment extends SherlockListFragment {
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		app = (MPDApplication) getActivity().getApplication();
-	}
-
-	@Override
 	public String toString() {
 		if (playlistName != null) {
 			return playlistName;
@@ -73,16 +72,10 @@ public class StoredPlaylistFragment extends SherlockListFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.simple_list, container, false);
-		registerForContextMenu((ListView) view.findViewById(android.R.id.list));
-		return view;
-	}
-	
-	protected void update() {
+	protected void asyncUpdate() {
 		try {
-			musics = app.oMPDAsyncHelper.oMPD.getPlaylistSongs(playlistName);
-			songlist = new ArrayList<HashMap<String, Object>>();
+			List<Music> musics = app.oMPDAsyncHelper.oMPD.getPlaylistSongs(playlistName);
+			songlist.clear();
 			for (Music m : musics) {
 				if (m == null) {
 					continue;
@@ -94,28 +87,15 @@ public class StoredPlaylistFragment extends SherlockListFragment {
 				item.put("play", 0);
 				songlist.add(item);
 			}
-			SimpleAdapter songs = new SimpleAdapter(getActivity(), songlist, R.layout.playlist_list_item,
-					new String[] { "play", "title", "artist" }, new int[] { R.id.picture, android.R.id.text1, android.R.id.text2 });
-
-			setListAdapter(songs);
+			items = musics;
 		} catch (MPDServerException e) {
 		}
-
-	}
-	@Override
-	public void onStart() {
-		super.onStart();
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		update();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
+	protected ListAdapter getCustomListAdapter() {
+		return new SimpleAdapter(getActivity(), songlist, R.layout.playlist_list_item,
+				new String[] { "play", "title", "artist" }, new int[] { R.id.picture, android.R.id.text1, android.R.id.text2 });
 	}
 
 	@Override
@@ -165,6 +145,14 @@ public class StoredPlaylistFragment extends SherlockListFragment {
 	}
 
 	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	}
+
+	@Override
+	protected void add(Item item, boolean replace, boolean play) {
+	}
+
+	@Override
+	protected void add(Item item, String playlist) {
 	}
 }
