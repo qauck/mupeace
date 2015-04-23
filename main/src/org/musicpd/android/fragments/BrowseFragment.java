@@ -36,7 +36,7 @@ import org.musicpd.android.helpers.MPDAsyncHelper.AsyncExecListener;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.StringResource;
 
-public abstract class BrowseFragment extends SherlockFragment implements OnMenuItemClickListener, AsyncExecListener, OnItemClickListener {
+public abstract class BrowseFragment extends GestureFragment implements OnMenuItemClickListener, AsyncExecListener, OnItemClickListener {
 
 	protected int iJobID = -1;
 

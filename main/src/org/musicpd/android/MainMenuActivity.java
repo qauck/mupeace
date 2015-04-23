@@ -33,6 +33,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import org.musicpd.android.MPDActivities.MPDFragmentActivity;
 import org.musicpd.android.fragments.BrowseFragment;
+import org.musicpd.android.fragments.GestureFragment;
 import org.musicpd.android.fragments.MainPageFragment;
 import org.musicpd.android.fragments.NowPlayingFragment;
 import org.musicpd.android.fragments.PlaylistFragment;
@@ -60,7 +62,7 @@ import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.Tools;
 import org.musicpd.android.tools.Tuple3;
 
-public class MainMenuActivity extends MPDFragmentActivity implements OnNavigationListener, ILibraryFragmentActivity {
+public class MainMenuActivity extends MPDFragmentActivity implements OnNavigationListener, ILibraryFragmentActivity, GestureFragment.Listener {
 
 	public static final int PLAYLIST = 1;
 
@@ -153,6 +155,17 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         mViewPager.setCurrentItem(1, false);
 		if (android.os.Build.VERSION.SDK_INT >= 9)
 			mViewPager.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				Object item = mSectionsPagerAdapter.getPrimaryItem();
+				if (item instanceof GestureFragment) {
+					((GestureFragment)item).setGestureFragmentListener(MainMenuActivity.this);
+					((GestureFragment)item).onTouchEvent(v, event);
+				}
+				return false;
+			}
+        });
 
         // When swiping between different sections, select the corresponding tab.
         // We can also use ActionBar.Tab#select() to do this if we have a reference to the
@@ -346,6 +359,42 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		backPressExitCount = 0;
 	}
 
+	@Override
+	public boolean dispatchTouchEvent (MotionEvent event) {
+		Object item = mSectionsPagerAdapter.getPrimaryItem();
+		if (item instanceof GestureFragment)
+			((GestureFragment)item).onTouchEvent(null, event);
+		return super.dispatchTouchEvent(event);
+    }
+
+	public boolean popBrowser() {
+		if (mViewPager.getCurrentItem() == 0) {
+			Fragment old = mSectionsPagerAdapter.pop();
+			if (old != null) {
+				CharSequence title = mSectionsPagerAdapter.getPageTitle(0);
+				actionBarAdapter.remove(getTitle(old));
+				actionBarAdapter.insert(title, 0);
+				if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
+					actionBar.setTitle(title);
+				final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+				ft.remove(old);
+				ft.commit();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void onSwipeLeft() {
+	}
+
+	@Override
+	public void onSwipeRight() {
+		popBrowser();
+	}
+
 	/**
 	 * Called when Back button is pressed, displays message to user indicating the if back button is pressed again the application will exit. We keep a count of how many time back
 	 * button is pressed within 5 seconds. If the count is greater than 1 then call system.exit(0)
@@ -361,21 +410,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			drawer_layout.closeDrawers();
 			return;
 		}
-		if (mViewPager.getCurrentItem() == 0) {
-			Fragment old = mSectionsPagerAdapter.pop();
-			if (old != null) {
-				CharSequence title = mSectionsPagerAdapter.getPageTitle(0);
-				actionBarAdapter.remove(getTitle(old));
-				actionBarAdapter.insert(title, 0);
-				if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_STANDARD)
-					actionBar.setTitle(title);
-				final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-				ft.remove(old);
-				ft.commit();
-				return;
-			}
-		}
+		if (popBrowser())
+			return;
 		if (mViewPager.getCurrentItem() != 1) {
 			mViewPager.setCurrentItem(1, true);
 			return;
@@ -512,6 +548,17 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
         @Override
         public long getItemId(int position) {
             return position > 0? position : stack.peek()._1;
+        }
+
+        Object primaryItem;
+
+        public Object getPrimaryItem() {
+        	return primaryItem;
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        	super.setPrimaryItem(container, position, primaryItem = object);
         }
     }
 
@@ -779,5 +826,4 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-    
 }
