@@ -59,6 +59,7 @@ import org.musicpd.android.cover.CoverBitmapDrawable;
 import org.musicpd.android.helpers.CoverAsyncHelper;
 import org.musicpd.android.helpers.AlbumCoverDownloadListener;
 import org.musicpd.android.helpers.MPDConnectionHandler;
+import org.musicpd.android.library.ILibraryFragmentActivity;
 import org.musicpd.android.library.SimpleLibraryActivity;
 import org.musicpd.android.tools.Job;
 import org.musicpd.android.tools.Log;
@@ -876,33 +877,20 @@ public class NowPlayingFragment extends SherlockFragment implements ClientAction
 		popupMenu.dismiss();
 		if(currentSong == null)
 			return;
+		BrowseFragment fragment = null;
 		final int action = ((PopupMenuItem) adpaterView.getAdapter().getItem(position)).actionId;
-		Intent intent;
 		switch(action) {
 			case POPUP_ALBUM:
-				intent = new Intent(getActivity(), SimpleLibraryActivity.class);
-				intent.putExtra("artist", new Artist(currentSong.getArtist(), 0));
-				startActivityForResult(intent, -1);
+				fragment = new AlbumsFragment().init(null, new Artist(currentSong.getArtist(), 2));
 				break;
 			case POPUP_ARTIST:
-				intent = new Intent(getActivity(), SimpleLibraryActivity.class);
-				intent.putExtra("artist", new Artist(currentSong.getArtist(), 0));
-				intent.putExtra("album", (Parcelable)new Album(currentSong.getAlbum()));
-				startActivityForResult(intent, -1);
+				fragment = new SongsFragment().init(null, new Artist(currentSong.getArtist(), 2), new Album(currentSong.getAlbum()));
 				break;
 			case POPUP_FOLDER:
-				final String path = currentSong.getFullpath();
-				if (path == null) {
-					break;
-				}
-				intent = new Intent(getActivity(), SimpleLibraryActivity.class);
-				intent.putExtra("folder", currentSong.getParent());
-				startActivityForResult(intent, -1);
+				fragment = new FSFragment().init(currentSong.getParent());
 				break;
 			case POPUP_STREAM:
-				intent = new Intent(getActivity(), SimpleLibraryActivity.class);
-				intent.putExtra("streams", true);
-				startActivityForResult(intent, -1);
+				fragment = new StreamsFragment();
 				break;
 			case POPUP_SHARE:
 				String shareString = getString(R.string.sharePrefix);
@@ -920,5 +908,7 @@ public class NowPlayingFragment extends SherlockFragment implements ClientAction
 				InformationActivity.start(getActivity(), new String[] { "file", currentSong.getFullpath() });
 				break;
 		}
+		if (fragment != null)
+			((ILibraryFragmentActivity) getActivity()).pushLibraryFragment(fragment, "playing");
 	}
 }

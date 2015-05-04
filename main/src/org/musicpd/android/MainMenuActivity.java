@@ -336,6 +336,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	@Override
 	public void pushLibraryFragment(Fragment fragment, String label) {
 		replace(mSectionsPagerAdapter.push(fragment), getTitle(fragment), label);
+		mViewPager.setCurrentItem(0, true);
 	}
 
 	@Override
