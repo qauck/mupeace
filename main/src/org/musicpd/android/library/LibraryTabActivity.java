@@ -64,7 +64,7 @@ public class LibraryTabActivity extends MPDFragmentActivity implements OnNavigat
 		ArrayAdapter<CharSequence> actionBarAdapter = new ArrayAdapter<CharSequence>(getSupportActionBar().getThemedContext(),
 				R.layout.sherlock_spinner_item);
         for (int i=0;i<mTabList.size();i++){
-            actionBarAdapter.add(getText(LibraryTabsUtil.getTabTitleResId(mTabList.get(i))));
+            actionBarAdapter.add(LibraryTabsUtil.getTabTitle(this, mTabList.get(i)).getString(this));
         }
 
         if(Build.VERSION.SDK_INT >= 14) {

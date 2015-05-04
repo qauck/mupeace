@@ -15,6 +15,7 @@ import org.a0z.mpd.exception.MPDServerException;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -98,6 +99,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	public ConnectionListener persistentConnectionListener;
 	ActionBarDrawerToggle drawerToggle;
 	DrawerLayout drawer_layout;
+	Context context;
 
 	@SuppressLint("NewApi")
 	@TargetApi(11)
@@ -119,7 +121,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
 		// Create the adapter that will return a fragment for each of the three primary sections
 		// of the app.
-		tabs = LibraryTabsUtil.getCurrentLibraryTabs(getApplicationContext());
+		context = getApplicationContext();
+		tabs = LibraryTabsUtil.getCurrentLibraryTabs(context);
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the action bar.
@@ -132,7 +135,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
 		actionBarAdapter = new ArrayAdapter<CharSequence>(getSupportActionBar().getThemedContext(),
 				R.layout.sherlock_spinner_item);
-		actionBarAdapter.add(getString(LibraryTabsUtil.getTabTitleResId(tabs.get(0))));
+		actionBarAdapter.add(LibraryTabsUtil.getTabTitle(context, tabs.get(0)).getString(context));
 		actionBarAdapter.add(getString(R.string.nowPlaying));
 		actionBarAdapter.add(getString(R.string.playQueue));
 
@@ -192,7 +195,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
         final List<String> tabNames = new ArrayList<String>(tabs.size());
         for (String tab : tabs)
-        	tabNames.add(getString(LibraryTabsUtil.getTabTitleResId(tab)));
+        	tabNames.add(LibraryTabsUtil.getTabTitle(context, tab).getString(context));
 
         final ListView left_library = (ListView) findViewById(R.id.left_library);
         left_library.setAdapter(new ArrayAdapter<String>(this, R.layout.simple_list_item_1, tabNames));
@@ -330,7 +333,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 	}
 
 	public void replaceLibraryFragment(String tab, String label) {
-		replace(mSectionsPagerAdapter.replace(tab), getString(LibraryTabsUtil.getTabTitleResId(tab)), label);
+		
+		replace(mSectionsPagerAdapter.replace(tab), LibraryTabsUtil.getTabTitle(context, tab).getString(context), label);
 	}
 
 	@Override
@@ -463,7 +467,7 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 			Class<? extends Object> clazz = tab == null? null : LibraryTabsUtil.getClass(MainMenuActivity.this, tab);
 			for (int i = 0, N = stack.size(); i < N; i++) {
 				Tuple3<Integer, Fragment, String> t = stack.get(i);
-				if (tab == null || clazz.isInstance(t._2) && t._3.equals(getString(LibraryTabsUtil.getTabTitleResId(tab))))
+				if (tab == null || clazz.isInstance(t._2) && t._3.equals(LibraryTabsUtil.getTabTitle(context, tab).getString(context)))
 					try {
 						return i + 1 == N? null : stack.peek()._2;
 					} finally {

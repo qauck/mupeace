@@ -3,6 +3,8 @@ package org.musicpd.android.tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
@@ -82,22 +84,32 @@ public class LibraryTabsUtil {
 		}
 	}
 
-	public static int getTabTitleResId(String tab) {
+	static Map<String, String> names = null;  
+	public static StringResource getTabTitle(Context context, String tab) {
+		if (names == null) {
+			names = new TreeMap<String, String>(); 
+			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+			for (String item : getAllLibraryTabs())
+				names.put(item, settings.getString(LIBRARY_TABS_SETTINGS_KEY + ":" + item, null));
+		}
+		String name = names.get(tab);
+		if (name != null)
+			return new StringResource(name);
 		switch(tab) {
 			case LibraryTabsUtil.TAB_ARTISTS:
-				return R.string.artists;
+				return new StringResource(R.string.artists);
 			case LibraryTabsUtil.TAB_ALBUMS:
-				return R.string.albums;
+				return new StringResource(R.string.albums);
 			case LibraryTabsUtil.TAB_PLAYLISTS:
-				return R.string.playlists;
+				return new StringResource(R.string.playlists);
 			case LibraryTabsUtil.TAB_STREAMS:
-				return R.string.streams;
+				return new StringResource(R.string.streams);
 			case LibraryTabsUtil.TAB_FILES:
-				return R.string.files;
+				return new StringResource(R.string.files);
 			case LibraryTabsUtil.TAB_GENRES:
-				return R.string.genres;
+				return new StringResource(R.string.genres);
 			default:
-				return R.string.artists;
+				return new StringResource(R.string.artists);
 		}
 	}
 
@@ -123,6 +135,25 @@ public class LibraryTabsUtil {
 				return GenresFragment.class;
 			default:
 				return ArtistsFragment.class;
+		}
+	}
+
+	public static void setTabName(Context context, String item, String name) {
+		if (name == null || name.length() == 0) {
+			// TODO: Update UI to avoid inconsistencies following changes
+			//names.remove(item);
+			PreferenceManager
+				.getDefaultSharedPreferences(context)
+				.edit()
+				.remove(LIBRARY_TABS_SETTINGS_KEY + ":" + item)
+				.apply();
+		} else {
+			//names.put(item, name);
+			PreferenceManager
+				.getDefaultSharedPreferences(context)
+				.edit()
+				.putString(LIBRARY_TABS_SETTINGS_KEY + ":" + item, name)
+				.apply();
 		}
 	}
 }

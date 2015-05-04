@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.text.Editable;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.widget.TextView;
 
 import org.musicpd.android.MPDApplication;
@@ -36,13 +41,14 @@ public class LibraryTabsSettings extends PreferenceActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.library_tabs_settings);
+		final Context context = this.getApplicationContext();
 
 		// get a list of all tabs
-		ArrayList<String> allTabs = LibraryTabsUtil.getAllLibraryTabs();
+		final ArrayList<String> allTabs = LibraryTabsUtil.getAllLibraryTabs();
 
 		// get a list of all currently visible tabs
 		ArrayList<String> currentTabs = LibraryTabsUtil
-				.getCurrentLibraryTabs(this.getApplicationContext());
+				.getCurrentLibraryTabs(context);
 
 		// create a list of all currently hidden tabs
 		ArrayList<String> hiddenTabs = new ArrayList<String>();
@@ -74,6 +80,30 @@ public class LibraryTabsSettings extends PreferenceActivity {
 		ListView mList;
 		mList = getListView();
 		((TouchInterceptor) mList).setDropListener(mDropListener);
+		mList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				final TabItem item = (TabItem)adapter.getItem(position);
+				if (allTabs.indexOf(item.text) >= 0) {
+					final EditText input = new EditText(LibraryTabsSettings.this);
+					input.setText(LibraryTabsUtil.getTabTitle(context, item.text).getString(context));
+					new AlertDialog.Builder(LibraryTabsSettings.this)
+						.setTitle("Rename " + item.text)
+						.setMessage("")
+						.setView(input)
+						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								Editable value = input.getText();
+								LibraryTabsUtil.setTabName(context, item.text, value.toString());
+							}
+						}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+							}
+						}).show();
+				}
+
+			}
+		});
 	}
 
 	@Override
@@ -138,7 +168,7 @@ class TabListDataBinder implements SeparatedListDataBinder {
 	public void onDataBind(Context context, View targetView,
 			List<Object> items, Object item, int position) {
 		final TextView text1 = (TextView) targetView.findViewById(R.id.text1);
-		text1.setText(LibraryTabsUtil.getTabTitleResId(((TabItem) item).text));
+		text1.setText(LibraryTabsUtil.getTabTitle(context, ((TabItem) item).text).getString(context));
 	}
 
 	public boolean isEnabled(int position, List<Object> items, Object item) {

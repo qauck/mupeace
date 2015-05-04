@@ -193,7 +193,8 @@
 
 	<string name="libraryTabsSettings">Library tab settings</string>
 	<string name="libraryTabsSettingsDescription">Select which tabs are visible and how they are ordered</string>
-	<string name="visibleTabs">Visible tabs</string>
+	<string name="libraryTabsSettingsHint">Drag to reorder or tap to rename. Renaming allows the tags in your MPD collection to be displayed by a different name throughout Mupeace. New names will be used the next time Mupeace is started.</string>
+		<string name="visibleTabs">Visible tabs</string>
 	<string name="hiddenTabs">Hidden tabs</string>
 	
 	<string name="coverArtTitle">Cover art settings</string>
