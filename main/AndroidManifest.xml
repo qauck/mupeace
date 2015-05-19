@@ -158,6 +158,7 @@
 
         <activity
             android:name=".TipsActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_tips" >
         </activity>
     </application>

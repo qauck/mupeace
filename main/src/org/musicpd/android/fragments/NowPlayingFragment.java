@@ -53,6 +53,7 @@ import org.musicpd.android.InformationActivity;
 import org.musicpd.android.MPDApplication;
 import org.musicpd.android.R;
 import org.musicpd.android.StreamingService;
+import org.musicpd.android.TipsActivity;
 import org.musicpd.android.adapters.PopupMenuAdapter;
 import org.musicpd.android.adapters.PopupMenuItem;
 import org.musicpd.android.cover.CoverBitmapDrawable;
@@ -787,7 +788,8 @@ public class NowPlayingFragment extends SherlockFragment implements ClientAction
 	}
 
 	private void updateStatus(MPDStatus status) {
-		if (getActivity() == null)
+		Activity activity = getActivity();
+		if (activity == null)
 			return;
 		final MPDApplication app = (MPDApplication) getActivity().getApplication();
 		if (status == null) {
@@ -817,6 +819,7 @@ public class NowPlayingFragment extends SherlockFragment implements ClientAction
 		}
         setShuffleButton(status.isRandom());
         setRepeatButton(status.isRepeat());
+        TipsActivity.consider(activity, app);
 	}
 
 	@Override
