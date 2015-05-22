@@ -397,7 +397,8 @@ public class MainMenuActivity extends MPDFragmentActivity implements OnNavigatio
 
 	@Override
 	public void onSwipeRight() {
-		popBrowser();
+		if (!popBrowser())
+			drawer_layout.openDrawer(GravityCompat.START);
 	}
 
 	/**
