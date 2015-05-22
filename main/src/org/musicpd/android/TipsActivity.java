@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -28,6 +29,7 @@ public class TipsActivity extends Activity {
         SVGImageView svgImageView = new SVGImageView(this);
         svgImageView.setImageAsset("tips.svg");
         layout.addView(svgImageView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.setBackgroundColor(Color.parseColor("#90000000"));
         setContentView(layout);
 
         layout.setOnTouchListener(new View.OnTouchListener() {
