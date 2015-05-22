@@ -1,0 +1,3 @@
+[submodule "androidsvg"]
+	path = androidsvg
+	url = git@github.com:eisnerd/androidsvg.git
