@@ -28,3 +28,4 @@
 .DS_Store
 *.class
 *.log
+main/.cache-main

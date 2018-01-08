@@ -7,7 +7,8 @@ import java.util.TimerTask;
 
 import org.a0z.mpd.MPD;
 import org.a0z.mpd.MPDStatus;
-
+import org.a0z.mpd.Music;
+import org.a0z.mpd.event.StatusChangeListener;
 import org.acra.*;
 import org.acra.annotation.*;
 import org.acra.sender.HttpSender.*;
@@ -17,23 +18,31 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.view.KeyEvent;
 import android.view.WindowManager.BadTokenException;
+import android.widget.RemoteViews;
 
 import org.musicpd.android.helpers.MPDAsyncHelper;
 import org.musicpd.android.helpers.MPDAsyncHelper.ConnectionListener;
 import org.musicpd.android.tools.Log;
 import org.musicpd.android.tools.NetworkHelper;
 import org.musicpd.android.tools.SettingsHelper;
+import org.musicpd.android.widgets.WidgetHelperService;
 
 @ReportsCrashes(
 	mode = ReportingInteractionMode.TOAST,
@@ -45,7 +54,7 @@ import org.musicpd.android.tools.SettingsHelper;
 	formUriBasicAuthPassword = "yH27tfmOtgx8DkwgoJtAEJDN",
 	formKey = ""
 )
-public class MPDApplication extends Application implements ConnectionListener {
+public class MPDApplication extends Application implements ConnectionListener, StatusChangeListener {
 
 	public static final String TAG = "Mupeace";
 	
@@ -55,7 +64,7 @@ public class MPDApplication extends Application implements ConnectionListener {
 	private SettingsHelper settingsHelper = null;
 	private ApplicationState state = new ApplicationState();
 	public final ServerDiscovery serverDiscovery = new ServerDiscovery(this);
-
+	
 	private Collection<Object> connectionLocks = new LinkedList<Object>();
 	private AlertDialog ad;
 	private Activity currentActivity;
@@ -109,6 +118,7 @@ public class MPDApplication extends Application implements ConnectionListener {
 
 		oMPDAsyncHelper = new MPDAsyncHelper();
 		oMPDAsyncHelper.addConnectionListener((MPDApplication) getApplicationContext());
+		oMPDAsyncHelper.addStatusChangeListener((MPDApplication) getApplicationContext());
 		
 		settingsHelper = new SettingsHelper(this, oMPDAsyncHelper);
 		
@@ -119,7 +129,7 @@ public class MPDApplication extends Application implements ConnectionListener {
 			settings.edit().putBoolean("albumTrackSort", true).commit();
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({"InlinedApi", "NewApi"})
 	void useThreadPool() {
 		try {
 			android.os.AsyncTask.class
@@ -344,4 +354,221 @@ public class MPDApplication extends Application implements ConnectionListener {
 			return false;
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lightNowPlayingTheme", false);
 	}
+
+  @Override
+  public void volumeChanged(MPDStatus mpdStatus, int oldVolume) {
+    // ignore
+  }
+
+  @Override
+  public void playlistChanged(MPDStatus mpdStatus, int oldPlaylistVersion) {
+    updateNotification(mpdStatus);
+  }
+
+  @Override
+  public void trackChanged(MPDStatus mpdStatus, int oldTrack) {
+    updateNotification(mpdStatus);
+  }
+
+  @Override
+  public void stateChanged(MPDStatus mpdStatus, String oldState) {
+    if (mpdStatus.getState().equals(MPDStatus.MPD_STATE_PLAYING) || mpdStatus.getState().equals(MPDStatus.MPD_STATE_PAUSED)){
+      updateNotification(mpdStatus);
+    }else{
+      dismissNotification();
+    }
+  }
+
+  @Override
+  public void repeatChanged(boolean repeating) {
+    // ignore
+  }
+
+  @Override
+  public void randomChanged(boolean random) {
+    // ignore
+  }
+
+  @Override
+  public void connectionStateChanged(boolean connected, boolean connectionLost) {
+    if (connectionLost){
+      dismissNotification();
+    }
+  }
+
+  @Override
+  public void libraryStateChanged(boolean updating) {
+    // ignore
+  }
+
+  @SuppressLint("NewApi")
+  public Notification createNotification(MPDStatus status, Music song) {
+    RemoteViews rv = new RemoteViews(getPackageName(), R.layout.notification_panel);
+    rv.setTextViewText(R.id.title, song.getTitle());
+    rv.setTextViewText(R.id.artist, song.getArtist());
+    rv.setTextViewText(R.id.album, song.getAlbum());
+    
+    boolean isPlaying = MPDStatus.MPD_STATE_PLAYING.equals(status.getState());
+    
+    rv.setImageViewResource(R.id.playpause, isPlaying ? R.drawable.ic_media_pause
+        : R.drawable.ic_media_play);
+    rv.setOnClickPendingIntent(R.id.album_art,
+        PendingIntent.getActivity(this, 0, new Intent(this, MainMenuActivity.class), 0));
+    
+    Intent intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_STOP);
+    rv.setOnClickPendingIntent(R.id.close, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_PLAYPAUSE);
+    rv.setOnClickPendingIntent(R.id.playpause, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_NEXT);
+    rv.setOnClickPendingIntent(R.id.next, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_STOP);
+    rv.setOnClickPendingIntent(R.id.close, PendingIntent.getService(this, 0, intent, 0));
+    
+    RemoteViews rvBig = new RemoteViews(this.getPackageName(), R.layout.notification_panel_big);
+    rvBig.setTextViewText(R.id.title, song.getTitle());
+    rvBig.setTextViewText(R.id.artist, song.getArtist());
+    rvBig.setTextViewText(R.id.album, song.getAlbum());
+    
+    rvBig.setImageViewResource(R.id.playpause, isPlaying ? R.drawable.ic_media_pause
+        : R.drawable.ic_media_play);
+    rvBig.setOnClickPendingIntent(R.id.album_art,
+        PendingIntent.getActivity(this, 0, new Intent(this, MainMenuActivity.class), 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_STOP);
+    rvBig.setOnClickPendingIntent(R.id.close, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_PREV);
+    rvBig.setOnClickPendingIntent(R.id.prev, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_PLAYPAUSE);
+    rvBig.setOnClickPendingIntent(R.id.playpause, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_NEXT);
+    rvBig.setOnClickPendingIntent(R.id.next, PendingIntent.getService(this, 0, intent, 0));
+    
+    intent = new Intent(this, WidgetHelperService.class);
+    intent.setAction(WidgetHelperService.CMD_STOP);
+    rv.setOnClickPendingIntent(R.id.close, PendingIntent.getService(this, 0, intent, 0));
+    
+    Notification nf = new Notification();
+    nf.icon = R.drawable.ic_media_play;
+    nf.contentView = rv;
+    nf.bigContentView = rvBig;
+    
+    return nf;
+    
+//    NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+//    builder
+//        .setOngoing(true)
+//        .setPriority(Notification.PRIORITY_HIGH)
+//       // .setContent(rv)
+//        .setStyle(
+//            new NotificationCompat.BigPictureStyle(builder).setBigContentTitle(song.getTitle())
+//                .setSummaryText(song.getArtist() + " | " + song.getAlbum()))
+//        .setSmallIcon(R.drawable.stat_notify_musicplayer).setContentTitle(song.getTitle())
+//        .setContentText(song.getArtist() + " | " + song.getAlbum());
+//    
+////    builder.addAction(R.drawable.ic_appwidget_music_prev, null, null);
+////
+////    if (status.getState().equals(MPDStatus.MPD_STATE_PLAYING)) {
+////      builder.addAction(R.drawable.ic_appwidget_music_pause, null, null);
+////    } else {
+////      builder.addAction(R.drawable.ic_appwidget_music_play, null, null);
+////    }
+////    builder.addAction(R.drawable.ic_appwidget_music_next, null, null);
+////    builder.addAction(R.drawable.ic_media_stop, null, null);
+//
+//    return builder.build();
+  }
+  
+  public void updateNotificationSync(MPDStatus status) {
+    String state = null;
+    try {
+      state = status.getState();
+      if (state != null) {
+        int songPos = status.getSongPos();
+        if (songPos >= 0) {
+          Music actSong = oMPDAsyncHelper.oMPD.getPlaylist().getByIndex(songPos);
+          if (actSong != null) {
+            Notification notification = createNotification(status, actSong);
+            if (notification == null) {
+              dismissNotification();
+              return;
+            }
+
+            final NotificationManager nm =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nm.notify(0, notification);
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.w(e);
+    }
+  }
+  
+  public void updateNotification(MPDStatus status) {
+    
+    new AsyncTask<MPDStatus, Void, Boolean>() {
+      
+      Music actSong = null;
+      MPDStatus status = null;
+
+      @Override
+      protected Boolean doInBackground(MPDStatus... params) {
+        String state = null;
+        try {
+          status = params[0];
+          state = status.getState();
+          if (state != null) {
+            int songPos = status.getSongPos();
+            if (songPos >= 0) {
+              actSong = oMPDAsyncHelper.oMPD.getPlaylist().getByIndex(songPos);
+              return true;
+            }
+          }
+        } catch (Exception e) {
+          Log.w(e);
+        }
+        return false;
+      }
+
+      protected void onPostExecute(Boolean result) {
+        
+        if (result == null || !result || actSong == null) {
+          dismissNotification();
+          return;
+        }
+        
+        Notification notification = createNotification(status, actSong);
+
+        if (notification == null) {
+          dismissNotification();
+          return;
+        }
+
+        final NotificationManager nm =
+            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.notify(0, notification);
+      };
+
+    }.execute(status);
+  }
+  
+  public void dismissNotification() {
+    final NotificationManager nm =
+        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.cancel(0);
+  }
 }
