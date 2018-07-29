@@ -1,0 +1,5 @@
+include ':androidSVG_12', ':xdns'
+//include ':ActionBarSherlock'
+include ':jMPDComm'
+include ':lastFMjava'
+include ':mupeace'

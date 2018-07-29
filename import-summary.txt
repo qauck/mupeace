@@ -1,0 +1,423 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Manifest Merging:
+-----------------
+Your project uses libraries that provide manifests, and your Eclipse
+project did not explicitly turn on manifest merging. In Android Gradle
+projects, manifests are always merged (meaning that contents from your
+libraries' manifests will be merged into the app manifest. If you had
+manually copied contents from library manifests into your app manifest
+you may need to remove these for the app to build correctly.
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+From AndroidSVG_1.2:
+* .git
+* .hgignore
+* .hgtags
+* androidsvg.iml
+* build.xml
+* buildAAR.py
+* doc\
+* doc\assets\
+* doc\assets\customizations.css
+* doc\assets\customizations.js
+* doc\assets\doclava-developer-core.css
+* doc\assets\doclava-developer-docs.css
+* doc\assets\doclava-developer-docs.js
+* doc\assets\doclava-developer-reference.js
+* doc\assets\images\
+* doc\assets\images\bg_fade.jpg
+* doc\assets\images\bg_logo.png
+* doc\assets\images\body-gradient-tab.png
+* doc\assets\images\body-gradient.png
+* doc\assets\images\grad-rule-qv.png
+* doc\assets\images\hr_gray_main.jpg
+* doc\assets\images\hr_gray_side.jpg
+* doc\assets\images\left_off.jpg
+* doc\assets\images\left_on.jpg
+* doc\assets\images\preliminary.png
+* doc\assets\images\resizable-e.gif
+* doc\assets\images\resizable-e2.gif
+* doc\assets\images\resizable-eg.gif
+* doc\assets\images\resizable-s.gif
+* doc\assets\images\resizable-s2.gif
+* doc\assets\images\resizable-sg.gif
+* doc\assets\images\right_off.jpg
+* doc\assets\images\right_on.jpg
+* doc\assets\images\sidenav-rule.png
+* doc\assets\images\spacer.gif
+* doc\assets\images\triangle-closed-small.png
+* doc\assets\images\triangle-closed.png
+* doc\assets\images\triangle-opened-small.png
+* doc\assets\images\triangle-opened.png
+* doc\assets\jquery-history.js
+* doc\assets\jquery-resizable.min.js
+* doc\assets\navtree_data.js
+* doc\assets\prettify.js
+* doc\assets\search_autocomplete.js
+* doc\assets\style.css
+* doc\assets\triangle-none.gif
+* doc\index.html
+* doc\reference\
+* doc\reference\classes.html
+* doc\reference\com\
+* doc\reference\com\caverock\
+* doc\reference\com\caverock\androidsvg\
+* doc\reference\com\caverock\androidsvg\PreserveAspectRatio.Alignment.html
+* doc\reference\com\caverock\androidsvg\PreserveAspectRatio.Scale.html
+* doc\reference\com\caverock\androidsvg\PreserveAspectRatio.html
+* doc\reference\com\caverock\androidsvg\SVG.html
+* doc\reference\com\caverock\androidsvg\SVGExternalFileResolver.html
+* doc\reference\com\caverock\androidsvg\SVGImageView.html
+* doc\reference\com\caverock\androidsvg\SVGParseException.html
+* doc\reference\com\caverock\androidsvg\SimpleAssetResolver.html
+* doc\reference\com\caverock\androidsvg\package-descr.html
+* doc\reference\com\caverock\androidsvg\package-summary.html
+* doc\reference\current.xml
+* doc\reference\hierarchy.html
+* doc\reference\index.html
+* doc\reference\lists.js
+* doc\reference\package-list
+* doc\reference\packages.html
+* doc_1.1.182\
+* doc_1.1.182\allclasses-frame.html
+* doc_1.1.182\allclasses-noframe.html
+* doc_1.1.182\com\
+* doc_1.1.182\com\caverock\
+* doc_1.1.182\com\caverock\androidsvg\
+* doc_1.1.182\com\caverock\androidsvg\SVG.AspectRatioAlignment.html
+* doc_1.1.182\com\caverock\androidsvg\SVG.AspectRatioScale.html
+* doc_1.1.182\com\caverock\androidsvg\SVG.html
+* doc_1.1.182\com\caverock\androidsvg\SVGAndroidRenderer.html
+* doc_1.1.182\com\caverock\androidsvg\SVGExternalFileResolver.html
+* doc_1.1.182\com\caverock\androidsvg\SVGParseException.html
+* doc_1.1.182\com\caverock\androidsvg\class-use\
+* doc_1.1.182\com\caverock\androidsvg\class-use\SVG.AspectRatioAlignment.html
+* doc_1.1.182\com\caverock\androidsvg\class-use\SVG.AspectRatioScale.html
+* doc_1.1.182\com\caverock\androidsvg\class-use\SVG.html
+* doc_1.1.182\com\caverock\androidsvg\class-use\SVGAndroidRenderer.html
+* doc_1.1.182\com\caverock\androidsvg\class-use\SVGExternalFileResolver.html
+* doc_1.1.182\com\caverock\androidsvg\class-use\SVGParseException.html
+* doc_1.1.182\com\caverock\androidsvg\package-frame.html
+* doc_1.1.182\com\caverock\androidsvg\package-summary.html
+* doc_1.1.182\com\caverock\androidsvg\package-tree.html
+* doc_1.1.182\com\caverock\androidsvg\package-use.html
+* doc_1.1.182\constant-values.html
+* doc_1.1.182\deprecated-list.html
+* doc_1.1.182\help-doc.html
+* doc_1.1.182\index-files\
+* doc_1.1.182\index-files\index-1.html
+* doc_1.1.182\index-files\index-2.html
+* doc_1.1.182\index-files\index-3.html
+* doc_1.1.182\index-files\index-4.html
+* doc_1.1.182\index-files\index-5.html
+* doc_1.1.182\index-files\index-6.html
+* doc_1.1.182\index.html
+* doc_1.1.182\overview-tree.html
+* doc_1.1.182\package-list
+* doc_1.1.182\resources\
+* doc_1.1.182\resources\background.gif
+* doc_1.1.182\resources\tab.gif
+* doc_1.1.182\resources\titlebar.gif
+* doc_1.1.182\resources\titlebar_end.gif
+* doc_1.1.182\serialized-form.html
+* doc_1.1.182\stylesheet.css
+* doc_1.2.0\
+* doc_1.2.0\assets\
+* doc_1.2.0\assets\customizations.css
+* doc_1.2.0\assets\customizations.js
+* doc_1.2.0\assets\doclava-developer-core.css
+* doc_1.2.0\assets\doclava-developer-docs.css
+* doc_1.2.0\assets\doclava-developer-docs.js
+* doc_1.2.0\assets\doclava-developer-reference.js
+* doc_1.2.0\assets\images\
+* doc_1.2.0\assets\images\bg_fade.jpg
+* doc_1.2.0\assets\images\bg_logo.png
+* doc_1.2.0\assets\images\body-gradient-tab.png
+* doc_1.2.0\assets\images\body-gradient.png
+* doc_1.2.0\assets\images\grad-rule-qv.png
+* doc_1.2.0\assets\images\hr_gray_main.jpg
+* doc_1.2.0\assets\images\hr_gray_side.jpg
+* doc_1.2.0\assets\images\left_off.jpg
+* doc_1.2.0\assets\images\left_on.jpg
+* doc_1.2.0\assets\images\preliminary.png
+* doc_1.2.0\assets\images\resizable-e.gif
+* doc_1.2.0\assets\images\resizable-e2.gif
+* doc_1.2.0\assets\images\resizable-eg.gif
+* doc_1.2.0\assets\images\resizable-s.gif
+* doc_1.2.0\assets\images\resizable-s2.gif
+* doc_1.2.0\assets\images\resizable-sg.gif
+* doc_1.2.0\assets\images\right_off.jpg
+* doc_1.2.0\assets\images\right_on.jpg
+* doc_1.2.0\assets\images\sidenav-rule.png
+* doc_1.2.0\assets\images\spacer.gif
+* doc_1.2.0\assets\images\triangle-closed-small.png
+* doc_1.2.0\assets\images\triangle-closed.png
+* doc_1.2.0\assets\images\triangle-opened-small.png
+* doc_1.2.0\assets\images\triangle-opened.png
+* doc_1.2.0\assets\jquery-history.js
+* doc_1.2.0\assets\jquery-resizable.min.js
+* doc_1.2.0\assets\navtree_data.js
+* doc_1.2.0\assets\prettify.js
+* doc_1.2.0\assets\search_autocomplete.js
+* doc_1.2.0\assets\style.css
+* doc_1.2.0\assets\triangle-none.gif
+* doc_1.2.0\index.html
+* doc_1.2.0\reference\
+* doc_1.2.0\reference\classes.html
+* doc_1.2.0\reference\com\
+* doc_1.2.0\reference\com\caverock\
+* doc_1.2.0\reference\com\caverock\androidsvg\
+* doc_1.2.0\reference\com\caverock\androidsvg\PreserveAspectRatio.Alignment.html
+* doc_1.2.0\reference\com\caverock\androidsvg\PreserveAspectRatio.Scale.html
+* doc_1.2.0\reference\com\caverock\androidsvg\PreserveAspectRatio.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVG.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVGExternalFileResolver.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVGImageView.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVGParseException.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVGPositioning.Alignment.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVGPositioning.Scale.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SVGPositioning.html
+* doc_1.2.0\reference\com\caverock\androidsvg\SimpleAssetResolver.html
+* doc_1.2.0\reference\com\caverock\androidsvg\package-descr.html
+* doc_1.2.0\reference\com\caverock\androidsvg\package-summary.html
+* doc_1.2.0\reference\current.xml
+* doc_1.2.0\reference\hierarchy.html
+* doc_1.2.0\reference\index.html
+* doc_1.2.0\reference\lists.js
+* doc_1.2.0\reference\package-list
+* doc_1.2.0\reference\packages.html
+* doclava.xml
+* ic_launcher-web.png
+* maven\
+* maven\androidsvg-javadoc.jar
+* maven\androidsvg-sources.jar
+* maven\maven-release.py
+* maven\src-pom.xml
+* proguard-project.txt
+From JMPDComm:
+* .checkstyle
+* .cvsignore
+* .externalToolBuilders\
+* .externalToolBuilders\New_Builder.launch
+* .externalToolBuilders\com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder.launch
+* .externalToolBuilders\de.mvmsoft.checkclipse.CheckclipseBuilder.launch
+* CHANGES
+* JMPDComm.eml
+* JMPDComm.iml
+* LICENSE
+* build.xml
+From LastFM-java:
+* .gitignore
+* LastFM-java.eml
+* LastFM-java.iml
+* build.xml
+* changes.txt
+* doc\
+* doc\allclasses-frame.html
+* doc\allclasses-noframe.html
+* doc\constant-values.html
+* doc\de\
+* doc\de\umass\
+* doc\de\umass\lastfm\
+* doc\de\umass\lastfm\Album.html
+* doc\de\umass\lastfm\Artist.html
+* doc\de\umass\lastfm\Authenticator.html
+* doc\de\umass\lastfm\BuyLink.StoreType.html
+* doc\de\umass\lastfm\BuyLink.html
+* doc\de\umass\lastfm\CallException.html
+* doc\de\umass\lastfm\Caller.html
+* doc\de\umass\lastfm\Chart.html
+* doc\de\umass\lastfm\Event.AttendanceStatus.html
+* doc\de\umass\lastfm\Event.TicketSupplier.html
+* doc\de\umass\lastfm\Event.html
+* doc\de\umass\lastfm\Geo.Metro.html
+* doc\de\umass\lastfm\Geo.html
+* doc\de\umass\lastfm\Group.html
+* doc\de\umass\lastfm\Image.html
+* doc\de\umass\lastfm\ImageHolder.html
+* doc\de\umass\lastfm\ImageSize.html
+* doc\de\umass\lastfm\Library.html
+* doc\de\umass\lastfm\MusicEntry.html
+* doc\de\umass\lastfm\PaginatedResult.html
+* doc\de\umass\lastfm\Period.html
+* doc\de\umass\lastfm\Playlist.html
+* doc\de\umass\lastfm\Radio.RadioStation.html
+* doc\de\umass\lastfm\Radio.html
+* doc\de\umass\lastfm\ResponseBuilder.html
+* doc\de\umass\lastfm\Result.Status.html
+* doc\de\umass\lastfm\Result.html
+* doc\de\umass\lastfm\Session.html
+* doc\de\umass\lastfm\Shout.html
+* doc\de\umass\lastfm\Tag.html
+* doc\de\umass\lastfm\Tasteometer.ComparisonResult.html
+* doc\de\umass\lastfm\Tasteometer.InputType.html
+* doc\de\umass\lastfm\Tasteometer.html
+* doc\de\umass\lastfm\Track.html
+* doc\de\umass\lastfm\User.html
+* doc\de\umass\lastfm\Venue.html
+* doc\de\umass\lastfm\cache\
+* doc\de\umass\lastfm\cache\Cache.html
+* doc\de\umass\lastfm\cache\DatabaseCache.html
+* doc\de\umass\lastfm\cache\DefaultExpirationPolicy.html
+* doc\de\umass\lastfm\cache\ExpirationPolicy.html
+* doc\de\umass\lastfm\cache\FileSystemCache.html
+* doc\de\umass\lastfm\cache\MemoryCache.html
+* doc\de\umass\lastfm\cache\ScrobbleCache.html
+* doc\de\umass\lastfm\cache\package-frame.html
+* doc\de\umass\lastfm\cache\package-summary.html
+* doc\de\umass\lastfm\cache\package-tree.html
+* doc\de\umass\lastfm\package-frame.html
+* doc\de\umass\lastfm\package-summary.html
+* doc\de\umass\lastfm\package-tree.html
+* doc\de\umass\lastfm\scrobble\
+* doc\de\umass\lastfm\scrobble\IgnoredMessageCode.html
+* doc\de\umass\lastfm\scrobble\Rating.html
+* doc\de\umass\lastfm\scrobble\ResponseStatus.html
+* doc\de\umass\lastfm\scrobble\ScrobbleData.html
+* doc\de\umass\lastfm\scrobble\ScrobbleResult.html
+* doc\de\umass\lastfm\scrobble\Scrobbler.html
+* doc\de\umass\lastfm\scrobble\Source.html
+* doc\de\umass\lastfm\scrobble\SubmissionData.html
+* doc\de\umass\lastfm\scrobble\package-frame.html
+* doc\de\umass\lastfm\scrobble\package-summary.html
+* doc\de\umass\lastfm\scrobble\package-tree.html
+* doc\de\umass\util\
+* doc\de\umass\util\MapUtilities.html
+* doc\de\umass\util\StringUtilities.html
+* doc\de\umass\util\package-frame.html
+* doc\de\umass\util\package-summary.html
+* doc\de\umass\util\package-tree.html
+* doc\de\umass\xml\
+* doc\de\umass\xml\DomElement.html
+* doc\de\umass\xml\package-frame.html
+* doc\de\umass\xml\package-summary.html
+* doc\de\umass\xml\package-tree.html
+* doc\deprecated-list.html
+* doc\help-doc.html
+* doc\index-all.html
+* doc\index.html
+* doc\overview-frame.html
+* doc\overview-summary.html
+* doc\overview-tree.html
+* doc\package-list
+* doc\resources\
+* doc\resources\inherit.gif
+* doc\serialized-form.html
+* doc\stylesheet.css
+* howto.txt
+* last.fm-bindings-0.1.1.jar
+* license.txt
+From Mupeace:
+* .cache-main
+* ant.properties
+* build.xml
+* custom_rules.xml
+* local.properties.tmpl
+* main.eml
+* main.iml
+* proguard-project.txt
+* proguard.cfg
+* proguard_cache\
+* proguard_cache\jartender_cache_1081627717393828644.jar
+* proguard_cache\jartender_cache_1345663240123615315.jar
+* proguard_cache\jartender_cache_1631747500452738480.jar
+* proguard_cache\jartender_cache_1876214026049004250.jar
+* proguard_cache\jartender_cache_2261556463608621113.jar
+* proguard_cache\jartender_cache_2635325921417325064.jar
+* proguard_cache\jartender_cache_2915464249501789913.jar
+* proguard_cache\jartender_cache_3034979227952467505.jar
+* proguard_cache\jartender_cache_3485068160421500844.jar
+* proguard_cache\jartender_cache_3801363479304293942.jar
+* proguard_cache\jartender_cache_462201767570444891.jar
+* proguard_cache\jartender_cache_4700198112542176838.jar
+* proguard_cache\jartender_cache_5358632097672276382.jar
+* proguard_cache\jartender_cache_5376129705418823160.jar
+* proguard_cache\jartender_cache_5417202030208028035.jar
+* proguard_cache\jartender_cache_5552599448877169999.jar
+* proguard_cache\jartender_cache_593882071054562326.jar
+* proguard_cache\jartender_cache_6052175902166431558.jar
+* proguard_cache\jartender_cache_6277212497905930378.jar
+* proguard_cache\jartender_cache_658721012842130996.jar
+* proguard_cache\jartender_cache_817786534565996191.jar
+* proguard_cache\jartender_cache_8445093573386797279.jar
+* proguard_cache\jartender_cache_8679185681345287639.jar
+* proguard_cache\proguard_processed.conf
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:21.0.3
+
+Replaced Libraries with Dependencies:
+-------------------------------------
+The importer recognized the following library projects as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the source files in your project were of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the library replacement in the import wizard and try
+again:
+
+ActionBarSherlock =>
+    com.actionbarsherlock:actionbarsherlock:4.4.0@aar
+    com.android.support:support-v4:21.0.3
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+In AndroidSVG_1.2:
+* AndroidManifest.xml => androidSVG_12\src\main\AndroidManifest.xml
+* res\ => androidSVG_12\src\main\res\
+* src\ => androidSVG_12\src\main\java\
+In JMPDComm:
+* AndroidManifest.xml => jMPDComm\src\main\AndroidManifest.xml
+* lint.xml => jMPDComm\lint.xml
+* res\ => jMPDComm\src\main\res\
+* src\ => jMPDComm\src\main\java\
+In LastFM-java:
+* src\ => lastFMjava\src\main\java\
+In Mupeace:
+* AndroidManifest.xml => mupeace\src\main\AndroidManifest.xml
+* assets\ => mupeace\src\main\assets\
+* libs\acra-4.5.0.jar => mupeace\libs\acra-4.5.0.jar
+* libs\org.xbill.dns_2.1.6.jar => mupeace\libs\org.xbill.dns_2.1.6.jar
+* libs\org.xbill.mdns_2.1.6.jar => mupeace\libs\org.xbill.mdns_2.1.6.jar
+* lint.xml => mupeace\lint.xml
+* res\ => mupeace\src\main\res\
+* src\ => mupeace\src\main\java\
+* src\org\musicpd\android\tools\AlbumGroups.scala => mupeace\src\main\resources\org\musicpd\android\tools\AlbumGroups.scala
+* src\org\musicpd\android\tools\RelatedSongs.scala => mupeace\src\main\resources\org\musicpd\android\tools\RelatedSongs.scala
+* src\org\musicpd\android\tools\Utils.scala => mupeace\src\main\resources\org\musicpd\android\tools\Utils.scala
+* src\org\musicpd\android\tools\YouTube.scala => mupeace\src\main\resources\org\musicpd\android\tools\YouTube.scala
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

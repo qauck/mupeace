@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="layout" name="main_fragment_tablet">
+            @layout/main_fragment_port
+    </item>
+    <item type="layout" name="songs">
+            @layout/songs_port
+    </item>
+    <item type="layout" name="song_header">
+            @layout/song_header_port
+    </item>
+</resources>

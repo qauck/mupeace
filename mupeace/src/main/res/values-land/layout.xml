@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="layout" name="main_activity_tablet">
+            @layout/main_activity_tablet_land
+    </item>
+    <item type="layout" name="main_fragment">
+            @layout/main_fragment_land
+    </item>
+    <item type="layout" name="songs">
+            @layout/songs_land
+    </item>
+    <item type="layout" name="song_header">
+            @layout/song_header_land
+    </item>
+</resources>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/GMM_LibTab"
+        android:icon="@drawable/ic_action_library_trim"
+        android:showAsAction="always"
+        android:title="@string/libraryTabActivity" android:orderInCategory="1">
+    </item>
+    <item
+        android:id="@+id/menu_up_to_root"
+        android:icon="@drawable/ic_action_up"
+        android:visible="false"
+        android:showAsAction="always"
+        android:title="@string/up" android:orderInCategory="2">
+	</item>
+    <item
+        android:id="@+id/menu_back_left"
+        android:icon="@drawable/ic_action_back_trim"
+        android:visible="false"
+        android:showAsAction="always"
+        android:title="@string/nowPlaying" android:orderInCategory="3">
+	</item>
+    <item
+        android:id="@+id/menu_previous"
+        android:icon="@drawable/ic_media_previous"
+        android:showAsAction="always"
+        android:title="@string/previous" android:orderInCategory="4">
+	</item>
+    <item
+        android:id="@+id/menu_play"
+        android:icon="@drawable/ic_media_play"
+        android:showAsAction="always"
+        android:title="@string/play" android:orderInCategory="5">
+	</item>
+    <item
+        android:id="@+id/menu_next"
+        android:icon="@drawable/ic_media_next"
+        android:showAsAction="always"
+        android:title="@string/next" android:orderInCategory="6">
+	</item>
+    <item
+        android:id="@+id/menu_playlist"
+        android:icon="@drawable/ic_action_queue"
+        android:showAsAction="always"
+        android:title="@string/playlist" android:orderInCategory="7">
+	</item>
+    <item
+        android:id="@+id/menu_back_right"
+        android:icon="@drawable/ic_action_back_flop"
+        android:visible="false"
+        android:showAsAction="always"
+        android:title="@string/nowPlaying" android:orderInCategory="8">
+	</item>
+    <item
+        android:id="@+id/PLM_EditPL"
+        android:icon="@drawable/ic_action_edit_dim"
+        android:visible="false"
+        android:showAsAction="always"
+        android:title="@string/editPlaylist" android:orderInCategory="9">
+    </item>
+    <item
+        android:id="@+id/PLM_Save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:visible="false"
+        android:showAsAction="never"
+        android:title="@string/save">
+    </item>
+    <item
+        android:id="@+id/PLM_Clear"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:visible="false"
+        android:showAsAction="never"
+        android:title="@string/clear">
+    </item>
+    <item
+        android:id="@+id/GMM_Stream"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/stream" android:orderInCategory="10"
+        android:checkable="true" >
+    </item>
+    <item
+        android:id="@+id/GMM_Single"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/singleMode" android:orderInCategory="11"
+        android:checkable="true" >
+    </item>
+    <item
+        android:id="@+id/GMM_Consume"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/consumeMode" android:orderInCategory="12"
+        android:checkable="true" >
+    </item>
+    <item
+        android:id="@+id/GMM_Random"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/random" android:orderInCategory="12"
+        android:checkable="true" >
+    </item>
+    <item
+        android:id="@+id/GMM_Repeat"
+        android:icon="@drawable/btn_check_buttonless_off"
+        android:showAsAction="never"
+        android:title="@string/repeat" android:orderInCategory="12"
+        android:checkable="true" >
+    </item>
+    <item
+        android:id="@+id/GMM_bonjour"
+        android:icon="@drawable/ic_action_server"
+        android:visible="false"
+        android:title="@string/servers" android:orderInCategory="13" >
+    </item>
+    <item
+        android:id="@+id/GMM_Outputs"
+        android:icon="@drawable/ic_action_output"
+        android:visible="false"
+        android:title="@string/outputs" android:orderInCategory="14" >
+    </item>
+    <item
+        android:id="@+id/GMM_Volume"
+        android:icon="@drawable/ic_action_volume"
+        android:showAsAction="never"
+        android:visible="false"
+        android:title="@string/volume" android:orderInCategory="15" >
+    </item>
+    <item
+        android:id="@+id/menu_search"
+        android:icon="@drawable/ic_action_search"
+        android:showAsAction="never"
+        android:title="@string/search" android:orderInCategory="16" >
+	</item>
+    <item
+        android:id="@+id/GMM_Settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:showAsAction="never"
+        android:title="@string/settings" android:orderInCategory="17" >
+    </item>
+</menu>
