@@ -32,7 +32,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -125,14 +125,14 @@ public class MainMenuActivity extends MPDFragmentActivity implements ActionBar.O
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the action bar.
-		actionBar = getActionBar();
+		actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(true);
 		setTitle(R.string.nowPlaying);
 
-		actionBarAdapter = new ArrayAdapter<CharSequence>(getActionBar().getThemedContext(),
+		actionBarAdapter = new ArrayAdapter<CharSequence>(getSupportActionBar().getThemedContext(),
 				android.R.layout.simple_spinner_item);
 		actionBarAdapter.add(LibraryTabsUtil.getTabTitle(context, tabs.get(0)).getString(context));
 		actionBarAdapter.add(getString(R.string.nowPlaying));

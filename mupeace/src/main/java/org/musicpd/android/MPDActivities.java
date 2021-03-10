@@ -23,7 +23,7 @@ public class MPDActivities {
 	private MPDActivities() {
 	}
 
-	public static class MPDFragmentActivity extends FragmentActivity {
+	public static class MPDFragmentActivity extends AppCompatActivity {
 
 		@Override
 		protected void onCreate(Bundle arg0) {

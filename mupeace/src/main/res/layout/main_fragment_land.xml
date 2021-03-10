@@ -188,7 +188,7 @@
 
     <LinearLayout
         android:id="@+id/buttons_layout"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="@dimen/playerbutton_height"
         android:gravity="center_horizontal" >

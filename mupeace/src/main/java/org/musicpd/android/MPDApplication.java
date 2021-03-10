@@ -58,7 +58,16 @@ public class MPDApplication extends Application implements ConnectionListener, S
 
 	public static final String TAG = "Mupeace";
 	
-	private static final long DISCONNECT_TIMER = 15000; 
+	private static final long DISCONNECT_TIMER = 15000;
+
+	static {
+		if (android.os.Build.VERSION.SDK_INT > 9) {
+			StrictMode.VmPolicy vmpolicy = new StrictMode.VmPolicy.Builder().penaltyLog().build();
+			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+			StrictMode.setThreadPolicy(policy);
+			StrictMode.setVmPolicy(vmpolicy);
+		}
+	}
 	
 	public MPDAsyncHelper oMPDAsyncHelper = null;
 	private SettingsHelper settingsHelper = null;
@@ -104,7 +113,7 @@ public class MPDApplication extends Application implements ConnectionListener, S
 		Log.tag = this.getString(R.string.app_name);
 		Log.i("onCreate Application");
 //		ACRA.init(this);
-		
+
 		MPD.setApplicationContext(getApplicationContext());
 
 		if (android.os.Build.VERSION.SDK_INT > 9) {
