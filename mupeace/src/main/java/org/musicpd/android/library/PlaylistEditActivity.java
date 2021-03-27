@@ -64,7 +64,11 @@ public class PlaylistEditActivity extends MPDListActivity implements StatusChang
 		Button button = (Button) findViewById(R.id.Remove);
 		button.setOnClickListener(this);
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		try {
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+		} catch (NullPointerException e) {
+			// new android not compatible
+		}
 	}
 
 	protected void update() {

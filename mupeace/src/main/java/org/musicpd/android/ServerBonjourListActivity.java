@@ -39,10 +39,14 @@ public class ServerBonjourListActivity extends MPDListActivity {
 		listAdapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, android.R.id.text1, serverDiscovery.servers);
 		getListView().setAdapter(listAdapter);
 
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setDisplayShowHomeEnabled(true);
+		try {
+			final ActionBar actionBar = getActionBar();
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayShowHomeEnabled(true);
+		} catch (NullPointerException e) {
+			// new android not compatible
+		}
 		setTitle(R.string.servers);
 
 		refresh();
